@@ -10,7 +10,6 @@ This script helps debian users install a preferred desktop environment from a li
   7. `MATE` Desktop,
   8. `BUDGIE Desktop` and
   9. `ENLIGHTENMENT` Desktop.
-  
 
 
 To use this script:
