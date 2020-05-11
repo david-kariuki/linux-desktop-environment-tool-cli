@@ -5,14 +5,17 @@
 # |& tee -a $logFileName - append output stream to logs and output to terminal
 
 declare -l currentDesktopEnvironment="" # Stores the value of the current installed desktop environment
-declare -l installedGNOME=0 # Stores true or false in integer if GNOME was installed
-declare -l installedKDE=0 # Stores true or false in integer if KDE was installed
-declare -l installedXFCE=0 # Stores true or false in integer if XFCE was installed
-declare -l installedLXDE=0 # Stores true or false in integer if LXDE was installed
-declare -l installedLXQT=0 # Stores true or false in integer if LXQT was installed
-declare -l installedCINNAMON=0 # Stores true or false in integer if CINNAMON was installed
-declare -l installedMATE=0 # Stores true or false in integer if MATE was installed
+declare -l installedGNOME=0 # Stores true or false in integer if GNOME Desktop was installed
+declare -l installedKDEPLASMA=0 # Stores true or false in integer if KDE PLASMA Desktop Desktop was installed
+declare -l installedXFCE=0 # Stores true or false in integer if XFCE Desktop was installed
+declare -l installedLXDE=0 # Stores true or false in integer if LXDE Desktop was installed
+declare -l installedLXQT=0 # Stores true or false in integer if LXQT Desktop was installed
+declare -l installedCINNAMON=0 # Stores true or false in integer if CINNAMON Desktop Desktop was installed
+declare -l installedMATE=0 # Stores true or false in integer if MATE Desktop was installed
+declare -l installedBUDGIE=0 # Stores true or false in integer if BUDGIE Desktop was installed
+declare -l installedENLIGHTENMENT=0 # Stores true or false in integer if ENLIGHTENMENT Desktop was installed
 declare -i installedAllEnvironments=0 # Strores true or false as integer if all desktop environments were installed
+declare -i -r numberOfDesktopEnvironments=9 # Stores total number of desktop environments
 declare -l -r scriptName="debian-install-desktop-environment-cli" # Stores script file name (Set to lowers and read-only)
 declare -l -r logFileName="$scriptName-logs.txt" # Stores script log-file name (Set to lowers and read-only)
 declare -l -r networkTestUrl="www.google.com" # Stores the networkTestUrl (Set to lowers and read-only)
@@ -34,19 +37,19 @@ function sectionBreak(){
     dksay "NC" "......\n\n" |& tee -a $logFileName # Print without color3
 }
 
-# Function to display connection established message
+# Function to show connection established message
 function connEst(){
     dksay "GREEN" "\n Internet connection established!!\n" |& tee -a $logFileName
 }
 
-# Function to display connection failed message
+# Function to show connection failed message
 function connFailed(){
     dksay "RED" "\n Internet connection failed!!\n" |& tee -a $logFileName
 }
 
 # Function to initiate logfile
 function initLogFile(){
-    cd ~ # Change directory to users' home directory
+    cd ~ || exit # Change directory to users' home directory
     rm -f $logFileName # Delete log file if/not it exists to prevent append to previous logs
     touch $logFileName # Creating log file
     currentDate="\n Date : `date` \n\n\n" # Get current date
@@ -57,27 +60,6 @@ function initLogFile(){
     sleep 3s # Hold for user to read
     dksay "YELLOW" "\n Created log file in `pwd` named \e[1;32m$logFileName\e[0m\n" |& tee -a $logFileName
     sleep 3s # Hold for user to read
-    sectionBreak
-}
-
-# Function to fix any unmet dependencies and broken installs incase of network interruption
-function checkDebugAndRollback(){
-
-    if [ "$1" == '--debug' ]; then # Check for debug switch
-        dksay "YELLOW" "\n Checking for errors and debugging. Please wait..." |& tee -a $logFileName
-    elif [ "$1" == '--network' ]; then # Check for debug switch
-        dksay "GREEN" "\n Debugging and rolling back some changes due to network interrupt.. Please wait..." |& tee -a $logFileName
-    fi
-    sleep 3s # Hold for user to read
-    apt-get check |& tee -a $logFileName # Check for broken/unmet
-    apt-get --fix-broken install |& tee -a $logFileName # Fix broken installs
-    dpkg --configure -a |& tee -a $logFileName # Configure packages
-    apt-get autoremove |& tee -a $logFileName # Remove un-used packages and dependencies
-    apt-get autoclean |& tee -a $logFileName # Clean apt-get cache
-    apt-get clean |& tee -a $logFileName # Clean disk space
-    appstreamcli refresh --force |& tee -a $logFileName # Refresh appstream cache
-    apt-file update |& tee -a $logFileName # apt-file update
-    sleep 2s # Hold for user to read
     sectionBreak
 }
 
@@ -119,8 +101,134 @@ function isConnected(){
                 done
             fi
         fi
-        sleep 1 # hold loop
+        sleep 1 # Hold loop
     done
+}
+
+# Function to log scripts' changelogs
+function logChangeLogs(){
+    dksay "YELLOW"  "\n\n Logging ChangeLogs." |& tee -a $logFileName # Log while showing on terminal
+    dksay "RED"     "\n $scriptName ChangeLogs." &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 1.0:" &>> $logFileName # Log without showing on terminal
+    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. GNOME Desktop environment.
+        \n\t\t b. KDE PLASMA Desktop environment.
+        \n\t\t c. XFCE Desktop environment.
+        \n\t\t d. LXDE Desktop environment.
+        \n\t\t e. LXQT Desktop environment.
+        \n\t\t f. CINNAMON Desktop environment.
+        \n\t\t g. MATE Desktop environment. " &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 1.1:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment\n\t\t    for users who initially, did not have any desktop environment installed."  &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 1.2:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. Changed KDE installation from standard installation to full installation.
+        \n\t\t b. Fixed some bugs including one that made installing all desktop environments a problem." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 2.0:" &>> $logFileName # Log without showing on terminal
+    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. BUDGIE Desktop environment.
+        \n\t\t b. ENLIGHTENMENT Desktop environment." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN" "\n ChangeLogs logging completed."
+    sectionBreak
+}
+
+# Function to update system packages, upgrade software packages and update apt-file
+function updateAndUpgrade(){
+    # Checking for connection after every major sep incase of network failure during one stage
+    if isConnected; then # Checking for internet connection
+        # Internet connection established
+        dksay "YELLOW" "\n Updating system packages." |& tee -a $logFileName
+        sleep 3s # Hold for user to read
+        apt-get update |& tee -a $logFileName
+        sectionBreak
+    else apt-get check; apt-get --fix-broken install; dpkg --configure -a; apt-get autoremove; apt-get autoclean;apt-get clean; appstreamcli refresh --force; apt-file update; sectionBreak
+    fi
+    if isConnected; then # Checking for internet connection
+        # Internet connection established
+        dksay "YELLOW" "\n Upgrading software packages." |& tee -a $logFileName
+        sleep 3s # Hold for user to read
+        apt-get upgrade -y |& tee -a $logFileName
+        sectionBreak
+    else apt-get check; apt-get --fix-broken install; dpkg --configure -a; apt-get autoremove; apt-get autoclean;apt-get clean; appstreamcli refresh --force; apt-file update; sectionBreak
+    fi
+    if isConnected; then # Checking for internet connection
+        # Internet connection established
+        dksay "YELLOW" "\n Running dist upgrade." |& tee -a $logFileName
+        sleep 3s # Hold for user to read
+        apt-get dist-upgrade -y |& tee -a $logFileName
+        sectionBreak
+    else apt-get check; apt-get --fix-broken install; dpkg --configure -a; apt-get autoremove; apt-get autoclean;apt-get clean; appstreamcli refresh --force; apt-file update; sectionBreak
+    fi
+    if isConnected; then # Checking for internet connection
+        # Internet connection established
+        dksay "YELLOW" "\n Running full upgrade." |& tee -a $logFileName
+        sleep 3s # Hold for user to read
+        apt-get full-upgrade -y |& tee -a $logFileName
+        sectionBreak
+    else apt-get check; apt-get --fix-broken install; dpkg --configure -a; apt-get autoremove; apt-get autoclean;apt-get clean; appstreamcli refresh --force; apt-file update; sectionBreak
+    fi
+    if isConnected; then # Checking for internet connection
+        # Internet connection established
+        dksay "YELLOW" "\n Installing apt-file for apt-file updates." |& tee -a $logFileName
+        sleep 3s # Hold for user to read
+        apt-get install apt-file -y |& tee -a $logFileName
+        sectionBreak
+        dksay "YELLOW" "\n Running apt-file update." |& tee -a $logFileName
+        sleep 3s
+        apt-file update |& tee -a $logFileName
+        sectionBreak
+    else apt-get check; apt-get --fix-broken install; dpkg --configure -a; apt-get autoremove; apt-get autoclean;apt-get clean; appstreamcli refresh --force; apt-file update; sectionBreak
+    fi
+}
+
+# Function to fix any unmet dependencies and broken installs incase of network interruption
+function checkDebugAndRollback(){
+    if [ "$1" == '--debug' ]; then # Check for debug switch
+        dksay "YELLOW" "\n Checking for errors and debugging. Please wait..." |& tee -a $logFileName
+    elif [ "$1" == '--network' ]; then # Check for debug switch
+        dksay "GREEN" "\n Debugging and rolling back some changes due to network interrupt. Please wait..." |& tee -a $logFileName
+    fi
+    sleep 3s # Hold for user to read
+
+    dksay "YELLOW"  "\n Checking for broken/unmet dependencies and fixing broken installs." |& tee -a $logFileName
+    sleep 3s # Hold for user to read
+    apt-get check |& tee -a $logFileName
+    apt-get --fix-broken install |& tee -a $logFileName
+    sectionBreak
+    dksay "YELLOW" "\n Cleaning apt-get cache, disk space and removing unused packages." |& tee -a $logFileName
+    sleep 3s # Hold for user to read
+    apt-get autoclean |& tee -a $logFileName
+    apt-get clean |& tee -a $logFileName
+    apt-get autoremove |& tee -a $logFileName
+    sectionBreak
+    dksay "YELLOW" "\n Configuring packages." |& tee -a $logFileName
+    sleep 3s # Hold for user to read
+    dpkg --configure -a |& tee -a $logFileName
+    sectionBreak
+
+    if [[ "$2" == '--update-upgrade' && "$1" == '--debug' ]]; then # Check for update-upgrade switch
+        updateAndUpgrade # Update system packages and upgrade software packages
+    fi
+
+    dksay "YELLOW" "\n Cleaning apt-get cache, disk space and removing unused packages." |& tee -a $logFileName
+    sleep 3s # Hold for user to read
+    apt-get autoclean |& tee -a $logFileName
+    apt-get clean |& tee -a $logFileName
+    apt-get autoremove |& tee -a $logFileName
+    sectionBreak
+    dksay "YELLOW" "\n Updating AppStream cache." |& tee -a $logFileName
+    sleep 3s # Hold for user to read
+    appstreamcli refresh --force |& tee -a $logFileName
+    sectionBreak
+    dksay "GREEN" "\n Checking and debugging completed successfuly!!" |& tee -a $logFileName
+    sectionBreak
 }
 
 # Function to exit script with custom coloured message
@@ -130,10 +238,13 @@ function exitScript(){
 
     if [ "$1" == '--end' ]; then # Check for --end switch
         # Check and debug any errors
-        checkDebugAndRollback --debug
+        checkDebugAndRollback --debug --update-upgrade
+
+        dksay "YELLOW" "\n Adding scripts\' ChangeLogs to logs"
+        logChangeLogs # Log ChangeLogs without showing on terminal
 
         cd ~ # Change to home directory
-        dksay "YELLOW" "\n You can find this scripts log in \e[1;31m`pwd`\e[0m named $logFileName"
+        dksay "YELLOW" "\n You can find this scripts\' logs in \e[1;31m`pwd`\e[0m named $logFileName"
         sleep 1s # Hold for user to read
 
         # Draw logo
@@ -145,7 +256,7 @@ function exitScript(){
 
       if [ "$2" == '--rollback' ]; then # Check for rollback switch
           # Initiate debug and rollback
-          checkDebugAndRollback --network   # Check for and fix any broken installs or unmet dependencies
+          checkDebugAndRollback --network # Check for and fix any broken installs or unmet dependencies
       fi
       dksay "YELLOW" "\n Please re-run script when there is a stable internet connection." |& tee -a $logFileName
       sleep 1s # Hold for user to read
@@ -156,9 +267,9 @@ function exitScript(){
 # Function to check current desktop environment
 function checkForDesktopEnvironment(){
     dksay "YELLOW" "\n Checking for desktop environment.." |& tee -a $logFileName
-    sleep 3s
+    sleep 3s # Hold for user to read
     if [ "$XDG_CURRENT_DESKTOP" = "" ]; then # Check for current desktop environment
-        currentDesktopEnvironment=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(xfce\|kde\|gnome\).*/\1/') # Test for XFCE, KDE and Gnome with GNU grep
+        currentDesktopEnvironment=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(xfce\|kde\|gnome\).*/\1/') # Test for XFCE, KDE PLASMA Desktop and Gnome  Desktops with GNU grep
     else currentDesktopEnvironment=$XDG_CURRENT_DESKTOP # Get XDG current desktop
     fi
     # Check if desktop environment was found
@@ -168,11 +279,18 @@ function checkForDesktopEnvironment(){
     fi
 }
 
+# Function to check the set default desktop environment incase of more that one desktop environment
+function checkSetDefaultDesktopEnvironment(){
+    dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
+    sleep 2s # Hold for user to read
+    cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
+}
+
 # Function to query if user wants to install another desktop environment after installing the previous
 # This is for users who want to install some but not all desktop environments
 function queryInstallAnotherDesktopEnvironment(){
     while true; do # Start infinite loop
-        # Prompt user to set GNOME desktop as default
+        # Prompt user to set GNOME Desktop as default
         dksay "YELLOW" "\n Would you like to install another desktop environment?\n\t1. Y (Yes) - to install another.\n\t2. N (No) to cancel." |& tee -a $logFileName
         read -p ' option: ' qryChoice
         qryChoice=${qryChoice,,} # Convert to lowercase
@@ -184,21 +302,21 @@ function queryInstallAnotherDesktopEnvironment(){
             return $(false) # Exit loop returning false
         else dksay "GREEN" "\n Invalid entry!! Please try again." |& tee -a $logFileName # Invalid entry
         fi
-        sleep 1 # hold loop
+        sleep 1 # Hold loop
     done
 }
 
-# Function to install GNOME desktop environment
+# Function to install GNOME Desktop environment
 function installGNOMEDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing GNOME. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install gnome -y |& tee -a $logFileName # Install full gnome with confirmation
-        else apt-get install gnome |& tee -a $logFileName # Install full gnome without confirmation
+            apt-get install gnome -y |& tee -a $logFileName # Install full GNOME with confirmation
+        else apt-get install gnome |& tee -a $logFileName # Install full GNOME without confirmation
         fi
-        dksay "YELLOW" "\n\n Installing alacarte - Alacarte is a menu editor for the GNOME desktop, written in Python" |& tee -a $logFileName
+        dksay "YELLOW" "\n\n Installing alacarte - Alacarte is a menu editor for the GNOME Desktop, written in Python" |& tee -a $logFileName
         sleep 5s # Hold for user to read
         apt-get install alacarte |& tee -a $logFileName # Install alacarte
         dksay "GREEN" "\n GNOME installation complete." |& tee -a $logFileName
@@ -212,10 +330,10 @@ function installGNOMEDesktop(){
             dksay "YELLOW" "\n Setting GNOME as default desktop environment." |& tee -a $logFileName
             sleep 5s # Hold for user to read
             dpkg-reconfigure gdm3 |& tee -a $logFileName
-            cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
+            checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         else # Let user decide
             while true; do
-                # Prompt user to set GNOME desktop as default
+                # Prompt user to set GNOME Desktop as default
                 dksay "YELLOW" "\n Would you like to set GNOME as yout default desktop environment?\n\t1. Y (Yes) - to set default.\n\t2. N (No) to cancel or skip." |& tee -a $logFileName
                 read -p ' option: ' dfChoice
                 dfChoice=${dfChoice,,} # Convert to lowercase
@@ -225,227 +343,264 @@ function installGNOMEDesktop(){
                     dksay "YELLOW" "\n Setting GNOME as default desktop environment." |& tee -a $logFileName
                     sleep 5s # Hold for user to read
                     dpkg-reconfigure gdm3 |& tee -a $logFileName
-                    cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
+                    checkSetDefaultDesktopEnvironment # Check for set default desktop environment
                     break # Break from loop
                 elif  [[ "$dfChoice" == 'no' || "$dfChoice" == 'n' || "$dfChoice" == '2' ]]; then # Option : No
                     dksay "NC" "\n Skipped..." |& tee -a $logFileName
                     break # Break from loop
                 else dksay "GREEN" "\n Invalid entry!! Please try again." |& tee -a $logFileName # Invalid entry
                 fi
-                sleep 1 # hold loop
+                sleep 1 # Hold loop
             done
         fi
         installedGNOME=$[installedGNOME + 1] # Set GNOME installed to true
         dksay "GREEN" "\n Your GNOME Desktop is all set." |& tee -a $logFileName
         sectionBreak
-    else # Internet connection failed
-        exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
-# Function to install KDE desktop environment
-function installKDEDesktop(){
+# Function to install KDE PLASMA Desktop Plasma Desktop environment
+function installKDEPlasmaDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
-        dksay "YELLOW" "\n\n Installing KDE Plasma Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        dksay "YELLOW" "\n\n Installing KDE PLASMA Desktop Plasma Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install kde-standard -y |& tee -a $logFileName # Install KDE without confirmation
-        else
-            apt-get install kde-standard |& tee -a $logFileName # Install KDE with confirmation
+            apt-get install kde-full -y |& tee -a $logFileName # Install KDE PLASMA Desktop without confirmation
+        else apt-get install kde-full |& tee -a $logFileName # Install KDE PLASMA Desktop with confirmation
         fi
-        installedKDE=$[installedKDE + 1] # Set KDE installed to true
-        dksay "GREEN" "\n Your KDE Plasma Desktop is all set." |& tee -a $logFileName
-        dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
-        cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
-        sleep 4s # Hold for user to read
+        installedKDEPLASMA=$[installedKDEPLASMA + 1] # Set KDE PLASMA Desktop installed to true
+        dksay "GREEN" "\n Your KDE PLASMA Desktop Plasma Desktop is all set." |& tee -a $logFileName
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
-    else # Internet connection failed
-        exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
-# Function to install XFCE desktop environment
+# Function to install XFCE Desktop environment
 function installXFCEDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing XFCE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install xfce4 -y |& tee -a $logFileName # Install XFCE4 with confirmation
+            apt-get install xfce4 -y |& tee -a $logFileName # Install XFCE4 Desktop with confirmation
         else
-            apt-get install xfce4 |& tee -a $logFileName # Install XFCE4 without confirmation
+            apt-get install xfce4 |& tee -a $logFileName # Install XFCE4 Desktop without confirmation
         fi
-        installedXFCE=$[installedXFCE + 1] # Set XFCE installed to true
+        installedXFCE=$[installedXFCE + 1] # Set XFCE Desktop installed to true
         dksay "GREEN" "\n Your XFCE Desktop is all set." |& tee -a $logFileName
-        dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
-        cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
-        sleep 4s # Hold for user to read
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
-    else # Internet connection failed
-          exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
-# Function to install LXDE desktop environment
+# Function to install LXDE Desktop environment
 function installLXDEDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing LXDE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install lxde -y |& tee -a $logFileName # Install LXDE desktop environment with confirmation
-        else apt-get install lxde |& tee -a $logFileName # Install LXDE desktop environment without confirmation
+            apt-get install lxde -y |& tee -a $logFileName # Install LXDE Desktop environment with confirmation
+        else apt-get install lxde |& tee -a $logFileName # Install LXDE Desktop environment without confirmation
         fi
-        installedLXDE=$[installedLXDE + 1] # Set LXDE installed to true
+        installedLXDE=$[installedLXDE + 1] # Set LXDE Desktop installed to true
         dksay "GREEN" "\n Your LXDE Desktop is all set." |& tee -a $logFileName
-        dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
-        cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
-        sleep 4s # Hold for user to read
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
-    else # Internet connection failed
-      exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
-# Function to install LXQT desktop environment
+# Function to install LXQT Desktop environment
 function installLXQTDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing LXQT Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install lxqt -y |& tee -a $logFileName # Install LXQT desktop environment with confirmation
-        else apt-get install lxqt |& tee -a $logFileName # Install LXQT desktop environment without confirmation
+            apt-get install lxqt sddm -y |& tee -a $logFileName # Install LXQT Desktop environment with confirmation
+        else apt-get install lxqt sddm |& tee -a $logFileName # Install LXQT Desktop environment without confirmation
         fi
-        installedLXQT=$[installedLXQT + 1] # Set LXQT installed to true
+        installedLXQT=$[installedLXQT + 1] # Set LXQT Desktop installed to true
         dksay "GREEN" "\n Your LXQT Desktop is all set." |& tee -a $logFileName
-        dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
-        cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
-        sleep 4s # Hold for user to read
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
-    else # Internet connection failed
-      exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
-# Function to install CINNAMON desktop environment
+# Function to install CINNAMON Desktop environment
 function installCinnamonDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing Cinnamon Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install cinnamon-desktop-environment -y |& tee -a $logFileName # Install cinnamon desktop environment with confirmation
-        else apt-get install cinnamon-desktop-environment |& tee -a $logFileName # Install cinnamon desktop environment without confirmation
+            apt-get install cinnamon-desktop-environment -y |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment with confirmation
+        else apt-get install cinnamon-desktop-environment |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment without confirmation
         fi
-        installedCINNAMON=$[installedCINNAMON + 1] # Set CINNAMON installed to true
+        installedCINNAMON=$[installedCINNAMON + 1] # Set CINNAMON Desktop installed to true
         dksay "GREEN" "\n Your Cinnamon Desktop is all set." |& tee -a $logFileName
-        dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
-        cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
-        sleep 4s # Hold for user to read
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
-    else # Internet connection failed
-          exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
-# Function to install MATE desktop environment
+# Function to install MATE Desktop environment
 function installMateDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing Mate Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install task-mate-desktop -y |& tee -a $logFileName # Install mate desktop environment with confirmation
-        else apt-get install task-mate-desktop |& tee -a $logFileName # Install mate desktop environment without confirmation
+            apt-get install task-mate-desktop -y |& tee -a $logFileName # Install MATE Desktop environment with confirmation
+        else apt-get install task-mate-desktop |& tee -a $logFileName # Install MATE Desktop environment without confirmation
         fi
-        installedMATE=$[installedMATE + 1] # Set MATE installed to true
+        installedMATE=$[installedMATE + 1] # Set MATE Desktop installed to true
         dksay "GREEN" "\n Your Mate Desktop is all set." |& tee -a $logFileName
-        dksay "YELLOW" "\n Checking for the default desktop environment." |& tee -a $logFileName
-        cat /etc/X11/default-display-manager |& tee -a $logFileName # Display set default desktop environment
-        sleep 4s # Hold for user to read
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
-    else # Internet connection failed
-          exitScript --connectionFailure # Exit script on connection failure
+    else exitScript --connectionFailure # Exit script on connection failure
+    fi
+}
+
+# Function to install BUDGIE Desktop environment
+function installBudgieDesktop(){
+    # Checking for internet connection before continuing
+    if isConnected; then # Internet connection Established
+        dksay "YELLOW" "\n\n Installing Budgie Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        sleep 6s # Hold for user to read
+        if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
+            apt-get install budgie-desktop budgie-indicator-applet -y |& tee -a $logFileName # Install BUDGIE Desktop environment with confirmation
+        else apt-get install budgie-desktop budgie-indicator-applet |& tee -a $logFileName # Install BUDGIE Desktop environment without confirmation
+        fi
+        installedBUDGIE=$[installedBUDGIE + 1] # Set BUDGIE Desktop installed to true
+        dksay "GREEN" "\n Your BUDGIE Desktop is all set." |& tee -a $logFileName
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
+        sectionBreak
+    else exitScript --connectionFailure # Exit script on connection failure
+    fi
+}
+
+# Function to install ENLIGHTENMENT Desktop environment
+function installEnlightenmentDesktop(){
+    # Checking for internet connection before continuing
+    if isConnected; then # Internet connection Established
+        dksay "YELLOW" "\n\n Installing Enlightenment Desktop dependencies." |& tee -a $logFileName
+        sleep 4s # Hold for user to read
+        apt-get install gcc g++ check libssl-dev libsystemd-dev libjpeg-dev libglib2.0-dev libgstreamer1.0-dev libluajit-5.1-dev libfreetype6-dev |& tee -a $logFileName
+        apt-get install libfontconfig1-dev libfribidi-dev libx11-dev libxext-dev libxrender-dev libgl1-mesa-dev libgif-dev libtiff5-dev libpoppler-dev |& tee -a $logFileName
+        apt-get install libpoppler-cpp-dev libspectre-dev libraw-dev librsvg2-dev libudev-dev libmount-dev libdbus-1-dev libpulse-dev libsndfile1-dev |& tee -a $logFileName
+        apt-get install libxcursor-dev libxcomposite-dev libxinerama-dev libxrandr-dev libxtst-dev libxss-dev libbullet-dev libgstreamer-plugins-base1.0-dev doxygen git |& tee -a $logFileName
+
+        dksay "YELLOW" "\n Installing Enlightenment Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        sleep 6s # Hold for user to read
+        if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
+            apt-get install enlightenment -y |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment with confirmation
+        else apt-get install enlightenment |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment without confirmation
+        fi
+        installedEnlightenment=$[installedEnlightenment + 1] # Set ENLIGHTENMENT Desktop installed to true
+        dksay "GREEN" "\n Your ENLIGHTENMENT Desktop is all set." |& tee -a $logFileName
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
+        sectionBreak
+    else exitScript --connectionFailure # Exit script on connection failure
     fi
 }
 
 # Function to install all desktop environments
 function installAllDesktopEnvironments(){
     # Install all desktop environments
-    installKDEDesktop --y # Install KDE Desktop
+    dksay "PURPLE" "\n\n Installing all $numberOfDesktopEnvironments desktop environments... Please wait!\n"
+    installKDEPlasmaDesktop --y # Install KDE PLASMA Desktop
     installXFCEDesktop --y # Install XFCE Desktop
     installLXDEDesktop --y # Install LXDE Desktop
     installLXQTDesktop --y # Install LXQT Desktop
     installCinnamonDesktop --y # Install CINNAMON Desktop
     installMateDesktop --y # Install MATE Desktop
     installGNOMEDesktop --setDefault # Install GNOME Desktop and set it as the default desktop
+    installBudgieDesktop --y # Install BUDGIE Desktop
+    installEnlightenmentDesktop --Y # Install ENLIGHTENMENT Desktop
 
     # Check if all desktop environments were installed
-    if [[ "$installedKDE" -eq 1 && "$installedXFCE" -eq 1 && "$installedLXDE" -eq 1 && "$installedLXQT" -eq 1 && "$installedCINNAMON" -eq 1
-          && "$installedMATE" -eq 1 && "$installedGNOME" -eq 1 ]];
+    if [[ "$installedKDEPLASMA" -eq 1 && "$installedXFCE" -eq 1 && "$installedLXDE" -eq 1 && "$installedLXQT" -eq 1 && "$installedCINNAMON" -eq 1
+          && "$installedMATE" -eq 1 && "$installedGNOME" -eq 1 && "$installedBUDGIE" -eq 1 && "$installedENLIGHTENMENT" -eq 1 ]];
     then # Installed all desktop environment
         installedAllEnvironments=$[installedAllEnvironments + 1] # Set installed all to true using integer
     fi
 }
 
-# Function to install desktop environment
+# Function to install desktop environments
 function installDesktopEnvironment(){
     declare -l reEnteredChoice="false"
     while true; do # Start infinite loop
         if [ "$reEnteredChoice" == 'false' ]; then
-        dksay "YELLOW" "\n Please select the desktop environment to install from the options below."
+        dksay "YELLOW" "\n Please select the desktop environment to install from the options below." |& tee -a $logFileName
         sleep 4s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m1. GNOME \e[0m: (gdm3)
+        \t\e[1;32m1. GNOME Desktop\e[0m: (gdm3)
                     \n\t\tGNOME is noteworthy for its efforts in usability and accessibility. Design professionals have been involved
                     in writing standards and recommendations. This has helped developers to create satisfying graphical user interfaces.
                     For administrators, GNOME seems to be better prepared for massive deployments. Many programming languages can be used
-                    in developing applications interfacing to GNOME."
+                    in developing applications interfacing to GNOME." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m2. KDE PLASMA\e[0m: (sddm)
+        \t\e[1;32m2. KDE PLASMA Desktop PLASMA Desktop PLASMA Desktop\e[0m: (sddm)
                     \n\t\tKDE has had a rapid evolution based on a very hands-on approach.
-                    KDE is a perfectly mature desktop environment with a wide range of applications."
+                    KDE PLASMA Desktop is a perfectly mature desktop environment with a wide range of applications." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m3. XFCE \e[0m: (lightdm)
+        \t\e[1;32m3. XFCE Desktop \e[0m: (lightdm)
                     \n\t\tXfce is a simple and lightweight graphical desktop, a perfect match for computers with limited resources.
                     Xfce is based on the GTK+ toolkit, and several components are common across both desktops but does not aim at
                     being a vast project. Beyond the basic components of a modern desktop, it only provides a few specific
                     applications: a terminal, a calendar (Orage), an image viewer, a CD/DVD burning tool, a media player (Parole),
-                    sound volume control and a text editor (mousepad)."
+                    sound volume control and a text editor (mousepad)." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m4. LXDE \e[0m:
+        \t\e[1;32m4. LXDE Desktop \e[0m:
                     \n\t\tLXDE is written in the C programming language, using the GTK+ 2 toolkit, and runs on Unix and
                     other POSIX-compliant platforms, such as Linux and BSDs. The LXDE project aims to provide a fast
-                    and energy-efficient desktop environment with low memory usage."
+                    and energy-efficient desktop environment with low memory usage." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m5. LXQT \e[0m:
+        \t\e[1;32m5. LXQT Desktop \e[0m:
                     \n\t\tLXQt is an advanced, easy-to-use, and fast desktop environment based on Qt technologies. It has been
                     tailored for users who value simplicity, speed, and an intuitive interface. Unlike most desktop environments,
-                    LXQt also works fine with less powerful machines."
+                    LXQt also works fine with less powerful machines." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m6. CINNAMON \e[0m:
+        \t\e[1;32m6. CINNAMON Desktop \e[0m:
                     \n\t\tCinnamon is a free and open-source desktop environment for the X Window System that derives from GNOME 3 but follows
                     traditional desktop metaphor conventions. Cinnamon is the principal desktop environment of the Linux Mint distribution and
-                    is available as an optional desktop for other Linux distributions and other Unix-like operating systems as well."
+                    is available as an optional desktop for other Linux distributions and other Unix-like operating systems as well." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m7. Mate \e[0m:
+        \t\e[1;32m7. Mate Desktop \e[0m:
                     \n\t\tThe MATE Desktop Environment is the continuation of GNOME 2. It provides an intuitive and attractive desktop environment
                     using traditional metaphors for Linux and other Unix-like operating systems. MATE is under active development to add support
-                    for new technologies while preserving a traditional desktop experience. Mate feels old school."
+                    for new technologies while preserving a traditional desktop experience. Mate feels old school." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m8. Install all of them \e[0m: This will set GNOME as your default desktop environment."
+        \t\e[1;32m8. Budgie Desktop \e[0m:
+                    \n\t\tBudgie is the popular desktop environment of the Solus OS distribution. It\’s quickly gained in popularity and spread around
+                    the Linux world. Budgie desktop tightly integrates with the GNOME stack, employing underlying technologies to offer an alternative
+                    desktop experience. Budgie applications generally use GTK and header bars similar to GNOME applications. Budgie builds what is effectively
+                    a Favorites list automatically as the user works, moving categories and applications toward the top of menus when they are used." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m9. To Skip / Cancel \e[0m: This will skip desktop environment installation."
+        \t\e[1;32m9. Enlightenment Desktop \e[0m:
+                    \n\t\tEnlightenment is an advanced window manager for X11. Unique features include: a fully animated background, nice drop shadows around
+                    windows, backed by an extremely clean and optimized foundation of APIs." |& tee -a $logFileName
+        dksay "NC" "
+        \t\e[1;32m10. Install all of them \e[0m: This will set GNOME Desktop as your default desktop environment." |& tee -a $logFileName
+        sleep 1s # Hold for user to read
+        dksay "NC" "
+        \t\e[1;32m11 or 0. To Skip / Cancel \e[0m: This will skip desktop environment installation." |& tee -a $logFileName
         sleep 1s
 
         read -p ' option: ' choice
@@ -453,10 +608,10 @@ function installDesktopEnvironment(){
         dksay "GREEN" " You chose : $choice" |& tee -a $logFileName # Display choice
         fi
         # Check chosen option
-        if  [[ "$choice" == '1' || "$choice" == 'gnome' ]]; then # Option : Yes
+        if  [[ "$choice" == '1' || "$choice" == 'gnome' ]]; then # Option : GNOME Desktop
             # Check if desktop environment value was is empty
             # This is for those who had installed some desktop environment.
-            # This ensures that they are not forced to make GNOME as their default if they were running any other desktop environment
+            # This ensures that they are not forced to make GNOME Desktop as their default if they were running any other desktop environment
             # This stage will be skipped if another desktop environment was found during check.
             if [ -z "$currentDesktopEnvironment" ]; then # (Variable empty) - Desktop environment not found
                 installGNOMEDesktop --setDefault # Install GNOME Desktop and set it as the default desktop
@@ -470,8 +625,8 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-        elif  [[ "$choice" == '2' || "$choice" == 'kde' || "$choice" == 'kde plasma' || "$choice" == 'kdeplasma' || "$choice" == 'kde-plasma' ]]; then # Option : KDE
-            installKDEDesktop # Install KDE Desktop
+        elif  [[ "$choice" == '2' || "$choice" == 'kde' || "$choice" == 'kde plasma' || "$choice" == 'kdeplasma' || "$choice" == 'kde-plasma' ]]; then # Option : KDE PLASMA Desktop
+            installKDEPlasmaDesktop # Install KDE PLASMA Desktop Desktop
 
             # Query if user wants to install another desktop environment after installing the previous
             if queryInstallAnotherDesktopEnvironment; then # Installation of another desktop environment - true
@@ -480,7 +635,7 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-        elif  [[ "$choice" == '3' || "$choice" == 'xfce' ]]; then # Option : XFCE
+        elif  [[ "$choice" == '3' || "$choice" == 'xfce' ]]; then # Option : XFCE Desktop
             installXFCEDesktop # Install XFCE Desktop
 
             # Query if user wants to install another desktop environment after installing the previous
@@ -490,7 +645,7 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-        elif  [[ "$choice" == '4' || "$choice" == 'lxde' ]]; then # Option : LXDE
+        elif  [[ "$choice" == '4' || "$choice" == 'lxde' ]]; then # Option : LXDE Desktop
             installLXDEDesktop # Install LXDE Desktop
 
             # Query if user wants to install another desktop environment after installing the previous
@@ -500,7 +655,7 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-          elif  [[ "$choice" == '5' || "$choice" == 'lxqt' ]]; then # Option : LXDE
+          elif  [[ "$choice" == '5' || "$choice" == 'lxqt' ]]; then # Option : LXQT Desktop
               installLXQTDesktop # Install LXQT Desktop
 
               # Query if user wants to install another desktop environment after installing the previous
@@ -520,7 +675,7 @@ function installDesktopEnvironment(){
               else # Installation of another desktop environment - false
                   break # Break from loop
               fi
-        elif  [[ "$choice" == '7' || "$choice" == 'mate' ]]; then # Option : MATE
+        elif  [[ "$choice" == '7' || "$choice" == 'mate' ]]; then # Option : MATE Desktop
             installMateDesktop # Install Mate Desktop
 
             # Query if user wants to install another desktop environment after installing the previous
@@ -530,10 +685,30 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-        elif  [[ "$choice" == '8' || "$choice" == 'install all of them' || "$choice" == 'install all' || "$choice" == 'all' ]]; then
+        elif  [[ "$choice" == '8' || "$choice" == 'budgie' ]]; then # Option : BUDGIE Desktop
+            installBudgieDesktop # Install Mate Desktop
+
+            # Query if user wants to install another desktop environment after installing the previous
+            if queryInstallAnotherDesktopEnvironment; then # Installation of another desktop environment - true
+                sleep 1 # Hold loop
+                continue # Resume iterations
+            else # Installation of another desktop environment - false
+                break # Break from loop
+            fi
+        elif  [[ "$choice" == '9' || "$choice" == 'enlightenment' ]]; then # Option : ENLIGHTENMENT Desktop
+            installEnlightenmentDesktop # Install Enlightenment Desktop
+
+            # Query if user wants to install another desktop environment after installing the previous
+            if queryInstallAnotherDesktopEnvironment; then # Installation of another desktop environment - true
+                sleep 1 # Hold loop
+                continue # Resume iterations
+            else # Installation of another desktop environment - false
+                break # Break from loop
+            fi
+        elif  [[ "$choice" == '10' || "$choice" == 'install all of them' || "$choice" == 'install all' || "$choice" == 'all' ]]; then
             installAllDesktopEnvironments # Install all desktop environments
             break # Break from loop
-        elif  [[ "$choice" == '9' || "$choice" == 'skip' || "$choice" == 'cancel' || "$choice" == 'exit' ]]; then
+        elif  [[ "$choice" == '11' || "$choice" == '0' || "$choice" == 'skip' || "$choice" == 'cancel' || "$choice" == 'exit' ]]; then
             dksay "RED" "\n Setup cancelled!!" |& tee -a $logFileName
             sleep 1s # Hold for user to read
             break # Break from loop
@@ -547,9 +722,124 @@ function installDesktopEnvironment(){
           dksay "GREEN" "You chose : $choice" # Display choice
           reEnteredChoice="true"
         fi
-        sleep 1 # hold loop
+        sleep 1 # Hold loop
     done
 }
+
+# Function to initiate and setup newly installed desktop environments for users who
+# did not have a desktop environment at the beginning
+function initSetupDesktopEnvironments(){
+    # Setting systemd to boot into graphical.target instead of multi-user.target
+    dksay "YELLOW" "\n Setting systemd to boot to graphicat.target instead of multi-user.target." |& tee -a $logFileName
+    sleep 2s # Hold for user to read
+    systemctl set-default graphical.target |& tee -a $logFileName # Start / restart gdm3
+    
+    sectionBreak
+
+    # Restart desktop environments if no desktop environment had been installed initially
+    if [ -z "$currentDesktopEnvironment" ]; # Check if current desktop environment vaue was initially empty
+    then # Installed all and GNOME Desktop is the default
+        if [ "$installedAllEnvironments" -eq 1 ]; then # Gnome is default
+            dksay "YELLOW" "\n Running --replace GNOME Desktop and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            gnome-shell --replace & disown |& tee -a $logFileName # --replace and disown to break HUP signal for all jobs if exists
+            dksay "YELLOW" "\n Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            systemctl restart gdm3 |& tee -a $logFileName # Start / restart gdm3 for GNOME Desktop
+        # Only GNOME Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 1 && "$installedAllEnvironments" -eq 0 ]]; then
+            dksay "YELLOW" "\n Running --replace GNOME Desktop and disown." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            gnome-shell --replace & disown |& tee -a $logFileName # --replace and disown to break HUP signal for all jobs if exists
+            dksay "YELLOW" "\n Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            systemctl restart gdm3 |& tee -a $logFileName # Start / restart gdm3 for GNOME Desktop
+        # Only KDE PLASMA Desktop Installed
+        elif [[ "$installedKDEPLASMA" -eq 1 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            dksay "YELLOW" "\n Enabling sddm for KDE PLASMA Desktop." |& tee -a $logFileName
+            systemctl enable sddm.service |& tee -a $logFileName # Enable sddm.service for KDE PLASMA Desktop
+            dksay "YELLOW" "\n Reconfiguring sddm for KDE PLASMA Desktop." |& tee -a $logFileName
+            dpkg-reconfigure sddm |& tee -a $logFileName
+            dksay "YELLOW" "\n Restarting sddm for KDE PLASMA Desktop." |& tee -a $logFileName
+            systemctl restart sddm |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+        # Only XFCE Desktop Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 1 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            dksay "YELLOW" "\n Restarting lightdm for XFCE Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dksay "YELLOW" "\n Re-configuring lightdm for XFCE Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dpkg-reconfigure lightdm |& tee -a $logFileName # Re-configure lightdm to load after boot
+            dksay "YELLOW" "\n Creating a symlink to the unit file in /lib/systemd/system in /etc/systemd/system for lightdm to start at boot." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            `ll /etc/systemd/system/display-manager.service` |& tee -a $logFileName
+            `ln -s /lib/systemd/system/lightdm.service /etc/systemd/system/display-manager.service` |& tee -a $logFileName
+            dksay "YELLOW" "\n Restarting lightdm and resetting it for XFCE Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            systemctl restart lightdm || xfwm4 --replace |& tee -a $logFileName # Restart lightdm for XFCE Desktop and reset
+        # Only ( LXDE or LXQT Desktops ) Installed
+        elif [[ "$installedLXDE" -eq 1 || "$installedLXQT" -eq 1 && "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            dksay "YELLOW" "\n Re-configuring and restarting openbox." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            openbox --reconfigure |& tee -a $logFileName
+            openbox --restart |& tee -a $logFileName
+            exec openbox-session |& tee -a $logFileName # Execute openbox display manager session
+            if [ "$installedLXDE" -eq 1 ]; then
+                exec startlxde |& tee -a $logFileName # Start LXDE Desktop from terminal
+            elif [ "$installedLXQT" -eq 1 ]; then
+                exec startlxqt |& tee -a $logFileName # Start LXQT Desktop from terminal
+            fi
+        # Only CINNAMON Desktop Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 1 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            killall cinnamon |& tee -a $logFileName # Kill all instances of CINNAMON Desktop if exists
+            dksay "YELLOW" "\n Re-configuring Cinnamon Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dpkg-reconfigure cinnamon |& tee -a $logFileName # Re-configure CINNAMON Desktop
+            dksay "YELLOW" "\n Running --replace for CINNAMON Desktop and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            cinnamon --replace && disown |& tee -a $logFileName # Replace CINNAMON Desktop and disown to break HUP signal for all jobs if exists
+            dksay "YELLOW" "\n Restarting mdm for CINNAMON Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            service restart mdm |& tee -a $logFileName # Restart mdm for CINNAMON Desktop
+        # Only MATE Desktop Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 1 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            killall mate-panel |& tee -a $logFileName # Kill all instances of MATE-PANEL if exists
+            dksay "YELLOW" "\n Re-configuring MATE-PANEL." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dpkg-reconfigure mate-panel |& tee -a $logFileName # Re-configure CINNAMON Desktop
+            dksay "YELLOW" "\n Running --replace for MATE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            mate-panel --replace && disown |& tee -a $logFileName # Replace MATE-PANEL and disown to break HUP signal for all jobs if exists
+        # Only Budgie Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 1 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            killall budgie-panel |& tee -a $logFileName # Kill all instances of BUDGIE-PANEL if exists
+            dksay "YELLOW" "\n Re-configuring BUDGIE-DESKTOP." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dpkg-reconfigure budgie-desktop |& tee -a $logFileName # Re-configure BUDGIE Desktop
+            dksay "YELLOW" "\n Running --replace for BUDGIE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            budgie-panel --replace && disown |& tee -a $logFileName # Replace BUDGIE-PANEL and disown to break HUP signal for all jobs if exists
+        # Only ENLIGHTENMENT Desktop Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 1 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+            killall enlightenment & tee -a $logFileName # Kill all instances of ENLIGHTENMENT Desktop if exists
+            dksay "YELLOW" "\n Re-configuring ENLIGHTENMENT Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dpkg-reconfigure enlightenment |& tee -a $logFileName # Re-configure ENLIGHTENMENT Desktop Desktop
+            dksay "YELLOW" "\n Starting ENLIGHTENMENT Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            enlightenment_start # Start Enlightenment Desktop
+        fi
+    fi
+}
+
 
 ########
 # Beginning of script
@@ -569,7 +859,7 @@ fi
 sectionBreak
 
 dksay "GREEN" " Script     : $scriptName"
-dksay "GREEN" " Version    : 2.0.0" |& tee -a $logFileName
+dksay "GREEN" " Version    : 2.0" |& tee -a $logFileName
 dksay "GREEN" " License    : MIT" |& tee -a $logFileName
 dksay "GREEN" " Author     : David Kariuki (dk)\n" |& tee -a $logFileName
 
@@ -581,8 +871,8 @@ if ! isConnected; then # Internet connection failed
   exitScript --connectionFailure # Exit script on connection failure
 fi
 
-# Check and debug any errors
-checkDebugAndRollback --debug
+# Debug and configure packages, update system packages, upgrade software packages and update apt-file
+checkDebugAndRollback --debug --update-upgrade
 
 # Check for desktop environment
 checkForDesktopEnvironment
@@ -594,17 +884,6 @@ installDesktopEnvironment
 exitScript --end |& tee -a $logFileName
 sleep 3s # Hold for user to read
 
-# Restart desktop environments services
-if [ "$installedAllEnvironments" -eq 1 ]; then # Gnome is default
-    dksay "YELLOW" "Restarting gdm3 service."
-    sleep 2s # Hold for user to read
-    systemctl restart gdm3 |& tee -a $logFileName # Start / restart gdm3
-elif [[ "$installedKDE" -eq 1 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedCINNAMON" -eq 0 && "$installedMATE" -eq 0 && "$installedGNOME" -eq 0 ]]; then
-    dksay "YELLOW" "Restarting sddm service."
-    sleep 2s # Hold for user to read
-    systemctl restart gdm3 |& tee -a $logFileName # Start / restart sddm
-fi
-# Restart
-#GNOME  - gdm3 -
-#KDE    - sddm
-#XFCE   - lightdm
+# Initiate and setup newly installed desktop environments for users
+# who did not have a desktop environment at the beginning
+initSetupDesktopEnvironments
