@@ -1,12 +1,15 @@
 # debian-install-desktop-environment-cli.sh
 
 This script helps debian users install a preferred desktop environment from a list of options on a terminal menu. The script runs on the terminal. The list of desktop environments listed are:
-  1. `GNOME`,
-  2. `KDE PLASMA`,
-  3. `XFCE`,
-  4. `LXDE`,
-  5. `CINNAMON` and
-  6. `MATE`.
+  1. `GNOME` Desktop,
+  2. `KDE PLASMA` Desktop,
+  3. `XFCE` Desktop,
+  4. `LXDE` Desktop,
+  5. `LXQT` Desktop,
+  6. `CINNAMON` Desktop,
+  7. `MATE` Desktop,
+  8. `BUDGIE Desktop` and
+  9. `ENLIGHTENMENT` Desktop.
   
 
 To use this script:
