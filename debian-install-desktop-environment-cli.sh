@@ -4,6 +4,7 @@
 # dksay - Custom function to create a custom coloured print
 # |& tee -a $logFileName - append output stream to logs and output to terminal
 
+declare -i setupCancelled=0 # Stores value to indicate setup cancellation
 declare -l currentDesktopEnvironment="" # Stores the value of the current installed desktop environment
 declare -l installedGNOME=0 # Stores true or false in integer if GNOME Desktop was installed
 declare -l installedKDEPLASMA=0 # Stores true or false in integer if KDE PLASMA Desktop Desktop was installed
@@ -58,7 +59,7 @@ function initLogFile(){
     # Change to users' home directory to prevent installing some packages to unknown user directories
     dksay "YELLOW" "\n\n Changed directory to home directory." |& tee -a $logFileName
     sleep 3s # Hold for user to read
-    dksay "YELLOW" "\n Created log file in `pwd` named \e[1;32m$logFileName\e[0m\n" |& tee -a $logFileName
+    dksay "YELLOW" "\n Created log file in $(pwd) named \e[1;32m$logFileName\e[0m\n" |& tee -a $logFileName
     sleep 3s # Hold for user to read
     sectionBreak
 }
@@ -95,7 +96,7 @@ function isConnected(){
 
                 # Run countdown
                 date1=$((`date +%s` + $countDownTime));
-                while [ "$date1" -ge `date +%s` ]; do
+                while [ "$date1" -ge "$(date +%s)" ]; do
                   echo -ne " \e[1;32mRetrying connection after :\e[0m \e[1;33m$(date -u --date @$(($date1 - `date +%s`)) +%H:%M:%S)\r\e[0m" |& tee -a $logFileName
                   sleep 0.1
                 done
@@ -237,14 +238,16 @@ function exitScript(){
     sleep 3s # Hold for user to read
 
     if [ "$1" == '--end' ]; then # Check for --end switch
-        # Check and debug any errors
-        checkDebugAndRollback --debug --update-upgrade
+        if [ "$setupCancelled" -eq 0 ]; then
+            # Check and debug any errors
+            checkDebugAndRollback --debug --update-upgrade
+        fi
 
         dksay "YELLOW" "\n Adding scripts\' ChangeLogs to logs"
         logChangeLogs # Log ChangeLogs without showing on terminal
 
-        cd ~ # Change to home directory
-        dksay "YELLOW" "\n You can find this scripts\' logs in \e[1;31m`pwd`\e[0m named $logFileName"
+        cd ~ || exit # Change to home directory
+        dksay "YELLOW" "\n You can find this scripts\' logs in \e[1;31m$(pwd)\e[0m named $logFileName"
         sleep 1s # Hold for user to read
 
         # Draw logo
@@ -360,18 +363,18 @@ function installGNOMEDesktop(){
     fi
 }
 
-# Function to install KDE PLASMA Desktop Plasma Desktop environment
+# Function to install KDE PLASMA Desktop environment
 function installKDEPlasmaDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
-        dksay "YELLOW" "\n\n Installing KDE PLASMA Desktop Plasma Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        dksay "YELLOW" "\n\n Installing KDE PLASMA Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
             apt-get install kde-full -y |& tee -a $logFileName # Install KDE PLASMA Desktop without confirmation
         else apt-get install kde-full |& tee -a $logFileName # Install KDE PLASMA Desktop with confirmation
         fi
         installedKDEPLASMA=$[installedKDEPLASMA + 1] # Set KDE PLASMA Desktop installed to true
-        dksay "GREEN" "\n Your KDE PLASMA Desktop Plasma Desktop is all set." |& tee -a $logFileName
+        dksay "GREEN" "\n Your KDE PLASMA Desktop is all set." |& tee -a $logFileName
         checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
     else exitScript --connectionFailure # Exit script on connection failure
@@ -549,7 +552,7 @@ function installDesktopEnvironment(){
                     in developing applications interfacing to GNOME." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m2. KDE PLASMA Desktop PLASMA Desktop PLASMA Desktop\e[0m: (sddm)
+        \t\e[1;32m2. KDE PLASMA Desktop\e[0m: (sddm)
                     \n\t\tKDE has had a rapid evolution based on a very hands-on approach.
                     KDE PLASMA Desktop is a perfectly mature desktop environment with a wide range of applications." |& tee -a $logFileName
         sleep 1s # Hold for user to read
@@ -710,6 +713,7 @@ function installDesktopEnvironment(){
             break # Break from loop
         elif  [[ "$choice" == '11' || "$choice" == '0' || "$choice" == 'skip' || "$choice" == 'cancel' || "$choice" == 'exit' ]]; then
             dksay "RED" "\n Setup cancelled!!" |& tee -a $logFileName
+            setupCancelled=$[setupCancelled + 1 ] # Increment setupCancelled value
             sleep 1s # Hold for user to read
             break # Break from loop
         else
@@ -733,7 +737,7 @@ function initSetupDesktopEnvironments(){
     dksay "YELLOW" "\n Setting systemd to boot to graphicat.target instead of multi-user.target." |& tee -a $logFileName
     sleep 2s # Hold for user to read
     systemctl set-default graphical.target |& tee -a $logFileName # Start / restart gdm3
-    
+
     sectionBreak
 
     # Restart desktop environments if no desktop environment had been installed initially
@@ -787,7 +791,6 @@ function initSetupDesktopEnvironments(){
             sleep 2s # Hold for user to read
             openbox --reconfigure |& tee -a $logFileName
             openbox --restart |& tee -a $logFileName
-            exec openbox-session |& tee -a $logFileName # Execute openbox display manager session
             if [ "$installedLXDE" -eq 1 ]; then
                 exec startlxde |& tee -a $logFileName # Start LXDE Desktop from terminal
             elif [ "$installedLXQT" -eq 1 ]; then
