@@ -3,7 +3,7 @@
 # Common code & words docs
 # dksay - Custom function to create a custom coloured print
 # |& tee -a $logFileName - append output stream to logs and output to terminal
-
+declare -r scriptVersion="3.0" # Stores scripts version
 declare -i setupCancelled=0 # Stores value to indicate setup cancellation
 declare -l currentDesktopEnvironment="" # Stores the value of the current installed desktop environment
 declare -l installedGNOME=0 # Stores true or false in integer if GNOME Desktop was installed
@@ -15,6 +15,7 @@ declare -l installedCINNAMON=0 # Stores true or false in integer if CINNAMON Des
 declare -l installedMATE=0 # Stores true or false in integer if MATE Desktop was installed
 declare -l installedBUDGIE=0 # Stores true or false in integer if BUDGIE Desktop was installed
 declare -l installedENLIGHTENMENT=0 # Stores true or false in integer if ENLIGHTENMENT Desktop was installed
+declare -l installedKODI=0 # Stores true or false in integer if ENLIGHTENMENT Desktop was installed
 declare -i installedAllEnvironments=0 # Strores true or false as integer if all desktop environments were installed
 declare -i -r numberOfDesktopEnvironments=9 # Stores total number of desktop environments
 declare -l -r scriptName="debian-install-desktop-environment-cli" # Stores script file name (Set to lowers and read-only)
@@ -135,6 +136,11 @@ function logChangeLogs(){
     dksay "NC" "
         \n\t\t a. BUDGIE Desktop environment.
         \n\t\t b. ENLIGHTENMENT Desktop environment." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 3.0:" &>> $logFileName # Log without showing on terminal
+    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. KODI Desktop environment."&>> $logFileName # Log without showing on terminal
     sleep 1s # Hold for user to read
     dksay "GREEN" "\n ChangeLogs logging completed."
     sectionBreak
@@ -494,14 +500,14 @@ function installBudgieDesktop(){
 function installEnlightenmentDesktop(){
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
-        dksay "YELLOW" "\n\n Installing Enlightenment Desktop dependencies." |& tee -a $logFileName
+        dksay "YELLOW" "\n\n Installing ENLIGHTENMENT Desktop dependencies." |& tee -a $logFileName
         sleep 4s # Hold for user to read
         apt-get install gcc g++ check libssl-dev libsystemd-dev libjpeg-dev libglib2.0-dev libgstreamer1.0-dev libluajit-5.1-dev libfreetype6-dev |& tee -a $logFileName
         apt-get install libfontconfig1-dev libfribidi-dev libx11-dev libxext-dev libxrender-dev libgl1-mesa-dev libgif-dev libtiff5-dev libpoppler-dev |& tee -a $logFileName
         apt-get install libpoppler-cpp-dev libspectre-dev libraw-dev librsvg2-dev libudev-dev libmount-dev libdbus-1-dev libpulse-dev libsndfile1-dev |& tee -a $logFileName
         apt-get install libxcursor-dev libxcomposite-dev libxinerama-dev libxrandr-dev libxtst-dev libxss-dev libbullet-dev libgstreamer-plugins-base1.0-dev doxygen git |& tee -a $logFileName
 
-        dksay "YELLOW" "\n Installing Enlightenment Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        dksay "YELLOW" "\n Installing ENLIGHTENMENT Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
             apt-get install enlightenment -y |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment with confirmation
@@ -509,6 +515,24 @@ function installEnlightenmentDesktop(){
         fi
         installedEnlightenment=$[installedEnlightenment + 1] # Set ENLIGHTENMENT Desktop installed to true
         dksay "GREEN" "\n Your ENLIGHTENMENT Desktop is all set." |& tee -a $logFileName
+        checkSetDefaultDesktopEnvironment # Check for set default desktop environment
+        sectionBreak
+    else exitScript --connectionFailure # Exit script on connection failure
+    fi
+}
+
+# Function to install KODI Desktop environment
+function installKodiDesktop(){
+    # Checking for internet connection before continuing
+    if isConnected; then # Internet connection Established
+        dksay "YELLOW" "\n Installing KODI Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        sleep 6s # Hold for user to read
+        if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
+            apt-get install kodi -y |& tee -a $logFileName # Install KODI Desktop environment with confirmation
+        else apt-get install kodi |& tee -a $logFileName # Install KODI Desktop environment without confirmation
+        fi
+        installedKODI=$[installedKODI + 1] # Set KODI Desktop installed to true
+        dksay "GREEN" "\n Your KODI Desktop is all set." |& tee -a $logFileName
         checkSetDefaultDesktopEnvironment # Check for set default desktop environment
         sectionBreak
     else exitScript --connectionFailure # Exit script on connection failure
@@ -600,10 +624,15 @@ function installDesktopEnvironment(){
                     \n\t\tEnlightenment is an advanced window manager for X11. Unique features include: a fully animated background, nice drop shadows around
                     windows, backed by an extremely clean and optimized foundation of APIs." |& tee -a $logFileName
         dksay "NC" "
-        \t\e[1;32m10. Install all of them \e[0m: This will set GNOME Desktop as your default desktop environment." |& tee -a $logFileName
+        \t\e[1;32m10. Kodi Desktop \e[0m:
+                    \n\t\tKodi spawned from the love of media. It is an entertainment hub that brings all your digital media together into a beautiful and user
+                    friendly package. It is 100% free and open source, very customisable and runs on a wide variety of devices. It is supported by a dedicated team
+                    of volunteers and a huge community." |& tee -a $logFileName
+        dksay "NC" "
+        \t\e[1;32m11. Install all of them \e[0m: This will set GNOME Desktop as your default desktop environment." |& tee -a $logFileName
         sleep 1s # Hold for user to read
         dksay "NC" "
-        \t\e[1;32m11 or 0. To Skip / Cancel \e[0m: This will skip desktop environment installation." |& tee -a $logFileName
+        \t\e[1;32m12 or 0. To Skip / Cancel \e[0m: This will skip desktop environment installation." |& tee -a $logFileName
         sleep 1s
 
         read -p ' option: ' choice
@@ -699,7 +728,7 @@ function installDesktopEnvironment(){
                 break # Break from loop
             fi
         elif  [[ "$choice" == '9' || "$choice" == 'enlightenment' ]]; then # Option : ENLIGHTENMENT Desktop
-            installEnlightenmentDesktop # Install Enlightenment Desktop
+            installEnlightenmentDesktop # Install ENLIGHTENMENT Desktop
 
             # Query if user wants to install another desktop environment after installing the previous
             if queryInstallAnotherDesktopEnvironment; then # Installation of another desktop environment - true
@@ -708,10 +737,20 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-        elif  [[ "$choice" == '10' || "$choice" == 'install all of them' || "$choice" == 'install all' || "$choice" == 'all' ]]; then
+        elif  [[ "$choice" == '10' || "$choice" == 'kodi' ]]; then # Option : KODI Desktop
+            installKodiDesktop # Install KODI Desktop
+
+            # Query if user wants to install another desktop environment after installing the previous
+            if queryInstallAnotherDesktopEnvironment; then # Installation of another desktop environment - true
+                sleep 1 # Hold loop
+                continue # Resume iterations
+            else # Installation of another desktop environment - false
+                break # Break from loop
+            fi
+        elif  [[ "$choice" == '11' || "$choice" == 'install all of them' || "$choice" == 'install all' || "$choice" == 'all' ]]; then
             installAllDesktopEnvironments # Install all desktop environments
             break # Break from loop
-        elif  [[ "$choice" == '11' || "$choice" == '0' || "$choice" == 'skip' || "$choice" == 'cancel' || "$choice" == 'exit' ]]; then
+        elif  [[ "$choice" == '12' || "$choice" == '0' || "$choice" == 'skip' || "$choice" == 'cancel' || "$choice" == 'exit' ]]; then
             dksay "RED" "\n Setup cancelled!!" |& tee -a $logFileName
             setupCancelled=$[setupCancelled + 1 ] # Increment setupCancelled value
             sleep 1s # Hold for user to read
@@ -737,7 +776,6 @@ function initSetupDesktopEnvironments(){
     dksay "YELLOW" "\n Setting systemd to boot to graphicat.target instead of multi-user.target." |& tee -a $logFileName
     sleep 2s # Hold for user to read
     systemctl set-default graphical.target |& tee -a $logFileName # Start / restart gdm3
-
     sectionBreak
 
     # Restart desktop environments if no desktop environment had been installed initially
@@ -750,18 +788,20 @@ function initSetupDesktopEnvironments(){
             dksay "YELLOW" "\n Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             systemctl restart gdm3 |& tee -a $logFileName # Start / restart gdm3 for GNOME Desktop
-        # Only GNOME Installed
+        # Only if GNOME Installed
         elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 1 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 1 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             dksay "YELLOW" "\n Running --replace GNOME Desktop and disown." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             gnome-shell --replace & disown |& tee -a $logFileName # --replace and disown to break HUP signal for all jobs if exists
             dksay "YELLOW" "\n Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             systemctl restart gdm3 |& tee -a $logFileName # Start / restart gdm3 for GNOME Desktop
-        # Only KDE PLASMA Desktop Installed
+        # Only if KDE PLASMA Desktop Installed
         elif [[ "$installedKDEPLASMA" -eq 1 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             dksay "YELLOW" "\n Enabling sddm for KDE PLASMA Desktop." |& tee -a $logFileName
             systemctl enable sddm.service |& tee -a $logFileName # Enable sddm.service for KDE PLASMA Desktop
             dksay "YELLOW" "\n Reconfiguring sddm for KDE PLASMA Desktop." |& tee -a $logFileName
@@ -769,9 +809,10 @@ function initSetupDesktopEnvironments(){
             dksay "YELLOW" "\n Restarting sddm for KDE PLASMA Desktop." |& tee -a $logFileName
             systemctl restart sddm |& tee -a $logFileName
             sleep 2s # Hold for user to read
-        # Only XFCE Desktop Installed
+        # Only if XFCE Desktop Installed
         elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 1 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             dksay "YELLOW" "\n Restarting lightdm for XFCE Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             dksay "YELLOW" "\n Re-configuring lightdm for XFCE Desktop." |& tee -a $logFileName
@@ -784,9 +825,10 @@ function initSetupDesktopEnvironments(){
             dksay "YELLOW" "\n Restarting lightdm and resetting it for XFCE Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             systemctl restart lightdm || xfwm4 --replace |& tee -a $logFileName # Restart lightdm for XFCE Desktop and reset
-        # Only ( LXDE or LXQT Desktops ) Installed
+        # Only if ( LXDE or LXQT Desktops ) Installed
         elif [[ "$installedLXDE" -eq 1 || "$installedLXQT" -eq 1 && "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             if [ "$installedLXDE" -eq 1 ]; then
                 dksay "YELLOW" "\n Restarting LXDE." |& tee -a $logFileName
                 sleep 2s # Hold for user to read
@@ -796,9 +838,10 @@ function initSetupDesktopEnvironments(){
                 sleep 2s # Hold for user to read
                 exec startlxqt |& tee -a $logFileName # Start LXQT Desktop from terminal
             fi
-        # Only CINNAMON Desktop Installed
+        # Only if CINNAMON Desktop Installed
         elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 1 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             killall cinnamon |& tee -a $logFileName # Kill all instances of CINNAMON Desktop if exists
             dksay "YELLOW" "\n Re-configuring Cinnamon Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
@@ -809,9 +852,10 @@ function initSetupDesktopEnvironments(){
             dksay "YELLOW" "\n Restarting mdm for CINNAMON Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             service restart mdm |& tee -a $logFileName # Restart mdm for CINNAMON Desktop
-        # Only MATE Desktop Installed
+        # Only if MATE Desktop Installed
         elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 1 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 1 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             killall mate-panel |& tee -a $logFileName # Kill all instances of MATE-PANEL if exists
             dksay "YELLOW" "\n Re-configuring MATE-PANEL." |& tee -a $logFileName
             sleep 2s # Hold for user to read
@@ -819,9 +863,10 @@ function initSetupDesktopEnvironments(){
             dksay "YELLOW" "\n Running --replace for MATE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             mate-panel --replace && disown |& tee -a $logFileName # Replace MATE-PANEL and disown to break HUP signal for all jobs if exists
-        # Only Budgie Installed
+        # Only if Budgie Installed
         elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 1 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 1 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             killall budgie-panel |& tee -a $logFileName # Kill all instances of BUDGIE-PANEL if exists
             dksay "YELLOW" "\n Re-configuring BUDGIE-DESKTOP." |& tee -a $logFileName
             sleep 2s # Hold for user to read
@@ -829,16 +874,28 @@ function initSetupDesktopEnvironments(){
             dksay "YELLOW" "\n Running --replace for BUDGIE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             budgie-panel --replace && disown |& tee -a $logFileName # Replace BUDGIE-PANEL and disown to break HUP signal for all jobs if exists
-        # Only ENLIGHTENMENT Desktop Installed
+        # Only if ENLIGHTENMENT Desktop Installed
         elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
-                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 1 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 1 && "$installedKODI" -eq 0 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
             killall enlightenment & tee -a $logFileName # Kill all instances of ENLIGHTENMENT Desktop if exists
             dksay "YELLOW" "\n Re-configuring ENLIGHTENMENT Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
             dpkg-reconfigure enlightenment |& tee -a $logFileName # Re-configure ENLIGHTENMENT Desktop Desktop
             dksay "YELLOW" "\n Starting ENLIGHTENMENT Desktop." |& tee -a $logFileName
             sleep 2s # Hold for user to read
-            enlightenment_start # Start Enlightenment Desktop
+            enlightenment_start # Start ENLIGHTENMENT Desktop
+        # Only if KODI Desktop Installed
+        elif [[ "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedLXDE" -eq 0 && "$installedLXQT" -eq 0 && "$installedCINNAMON" -eq 0 &&
+                "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedKODI" -eq 1 && "$installedGNOME" -eq 0 &&
+                "$installedAllEnvironments" -eq 0 ]]; then
+            killall kodi & tee -a $logFileName # Kill all instances of KODI Desktop if exists
+            dksay "YELLOW" "\n Re-configuring KODI Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            dpkg-reconfigure kodi |& tee -a $logFileName # Re-configure KODI Desktop Desktop
+            dksay "YELLOW" "\n Starting KODI Desktop." |& tee -a $logFileName
+            sleep 2s # Hold for user to read
+            kodi # Start kodi Desktop
         fi
     fi
 }
