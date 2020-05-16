@@ -19,3 +19,6 @@ To use this script:
   4. Open terminal at the files location by right clicking and selecting `Open in terminal`. You can as well launch your terminal and navigate to where the downloaded file is.
   5. Type `chmod +x debian-install-desktop-environment-cli.sh` and click enter to make the script executable.
   6. Type `./debian-install-desktop-environment-cli.sh` to run the script.
+
+
+Current version: `Version 3.0`
