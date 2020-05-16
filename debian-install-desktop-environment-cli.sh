@@ -722,7 +722,7 @@ function installDesktopEnvironment(){
 
           # Re-enter choice
           read -p ' option: ' choice
-          choice=${choice,,} # Convert to lowercase
+          choice=${choice,,} # Convert to lowercases
           dksay "GREEN" "You chose : $choice" # Display choice
           reEnteredChoice="true"
         fi
@@ -787,13 +787,13 @@ function initSetupDesktopEnvironments(){
         # Only ( LXDE or LXQT Desktops ) Installed
         elif [[ "$installedLXDE" -eq 1 || "$installedLXQT" -eq 1 && "$installedKDEPLASMA" -eq 0 && "$installedXFCE" -eq 0 && "$installedCINNAMON" -eq 0 &&
                 "$installedMATE" -eq 0 && "$installedBUDGIE" -eq 0 && "$installedEnlightenment" -eq 0 && "$installedGNOME" -eq 0 && "$installedAllEnvironments" -eq 0 ]]; then
-            dksay "YELLOW" "\n Re-configuring and restarting openbox." |& tee -a $logFileName
-            sleep 2s # Hold for user to read
-            openbox --reconfigure |& tee -a $logFileName
-            openbox --restart |& tee -a $logFileName
             if [ "$installedLXDE" -eq 1 ]; then
+                dksay "YELLOW" "\n Restarting LXDE." |& tee -a $logFileName
+                sleep 2s # Hold for user to read
                 exec startlxde |& tee -a $logFileName # Start LXDE Desktop from terminal
             elif [ "$installedLXQT" -eq 1 ]; then
+                dksay "YELLOW" "\n Restarting LXQT." |& tee -a $logFileName
+                sleep 2s # Hold for user to read
                 exec startlxqt |& tee -a $logFileName # Start LXQT Desktop from terminal
             fi
         # Only CINNAMON Desktop Installed
