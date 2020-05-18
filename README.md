@@ -1,4 +1,4 @@
-# debian-install-desktop-environment-cli.sh
+# debian-desktop-environment-manager-cli.sh
 Current version: `Version 3.0`
 
 This script helps debian users install a preferred desktop environment from a list of options on a terminal menu. 
