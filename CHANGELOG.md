@@ -8,10 +8,10 @@
    - `LXDE` Desktop environment.
    - `LXQT` Desktop environment.
    - `CINNAMON` Desktop environment.
-   - `MATE` Desktop environment.```
+   - `MATE` Desktop environment.
 
 **Version 1.1:**
-1. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment   for users who initially, did not have any desktop environment installed." 
+1. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment   for users who initially, did not have any desktop environment installed."
 
 **Version 1.2:**
 1. Changed KDE installation from standard installation to full installation.
