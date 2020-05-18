@@ -144,8 +144,9 @@ function logChangeLogs(){
     sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 3.1:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
-        \n\t\t a. Added feature to install X Window Server .
-        \n\t\t b. Logs feature bug fixes." &>> $logFileName # Log without showing on terminal
+        \n\t\t a. Added feature to install X Window Server.
+        \n\t\t b. Logs feature bug fixes.
+        \n\t\t c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh " &>> $logFileName # Log without showing on terminal
 
     sleep 1s # Hold for user to read
     dksay "GREEN" "\n ChangeLogs logging completed."
