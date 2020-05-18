@@ -24,9 +24,9 @@
 
 **Version 3.0:**
   1. Added options to install:
-     - KODI` Desktop environment.
+     - `KODI` Desktop environment.
 
 **Version 3.1:**
-        a. Added feature to install `X Window Server`.
-        b. Logs feature bug fixes.
-        c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh
+1. Added feature to install `X Window Server`.
+2. Logs feature bug fixes.
+3. Changed name from `debian-install-desktop-environment-cli.sh` to `debian-desktop-environment-manager-cli.sh`
