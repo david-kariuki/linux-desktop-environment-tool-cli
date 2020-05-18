@@ -3,7 +3,7 @@
 # Common code & words docs
 # dksay - Custom function to create a custom coloured print
 # |& tee -a $logFileName - append output stream to logs and output to terminal
-declare -r scriptVersion="3.0" # Stores scripts version
+declare -r scriptVersion="3.1" # Stores scripts version
 declare -i setupCancelled=0 # Stores value to indicate setup cancellation
 declare -l currentDesktopEnvironment="" # Stores the value of the current installed desktop environment
 declare -l installedGNOME=0 # Stores true or false in integer if GNOME Desktop was installed
@@ -17,11 +17,11 @@ declare -l installedBUDGIE=0 # Stores true or false in integer if BUDGIE Desktop
 declare -l installedENLIGHTENMENT=0 # Stores true or false in integer if ENLIGHTENMENT Desktop was installed
 declare -l installedKODI=0 # Stores true or false in integer if ENLIGHTENMENT Desktop was installed
 declare -i installedAllEnvironments=0 # Strores true or false as integer if all desktop environments were installed
+declare -i XServerInstalled=0 # Strores true or false as integer if XServer is installed
 declare -i -r numberOfDesktopEnvironments=9 # Stores total number of desktop environments
-declare -l -r scriptName="debian-install-desktop-environment-cli" # Stores script file name (Set to lowers and read-only)
+declare -l -r scriptName="debian-desktop-environment-manager-cli" # Stores script file name (Set to lowers and read-only)
 declare -l -r logFileName="$scriptName-logs.txt" # Stores script log-file name (Set to lowers and read-only)
 declare -l -r networkTestUrl="www.google.com" # Stores the networkTestUrl (Set to lowers and read-only)
-
 
 # Function to create a custom coloured print
 function dksay(){
@@ -61,7 +61,7 @@ function initLogFile(){
     dksay "YELLOW" "\n\n Changed directory to home directory." |& tee -a $logFileName
     sleep 3s # Hold for user to read
     dksay "YELLOW" "\n Created log file in $(pwd) named \e[1;32m$logFileName\e[0m\n" |& tee -a $logFileName
-    sleep 3s # Hold for user to read
+    sleep 4s # Hold for user to read
     sectionBreak
 }
 
@@ -142,6 +142,12 @@ function logChangeLogs(){
     dksay "NC" "
         \n\t\t a. KODI Desktop environment."&>> $logFileName # Log without showing on terminal
     sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 3.1:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. Added feature to install X Window Server .
+        \n\t\t b. Logs feature bug fixes." &>> $logFileName # Log without showing on terminal
+
+    sleep 1s # Hold for user to read
     dksay "GREEN" "\n ChangeLogs logging completed."
     sectionBreak
 }
@@ -199,7 +205,7 @@ function updateAndUpgrade(){
 function checkDebugAndRollback(){
     if [ "$1" == '--debug' ]; then # Check for debug switch
         dksay "YELLOW" "\n Checking for errors and debugging. Please wait..." |& tee -a $logFileName
-    elif [ "$1" == '--network' ]; then # Check for debug switch
+    elif [ "$1" == '--network' ]; then # Check for network switch
         dksay "GREEN" "\n Debugging and rolling back some changes due to network interrupt. Please wait..." |& tee -a $logFileName
     fi
     sleep 3s # Hold for user to read
@@ -255,12 +261,13 @@ function exitScript(){
         cd ~ || exit # Change to home directory
         dksay "YELLOW" "\n You can find this scripts\' logs in \e[1;31m$(pwd)\e[0m named $logFileName"
         sleep 1s # Hold for user to read
+        dksay "GREEN" "\n\n Type: \e[1;31mcat $scriptName\e[0m to view the logs in terminal"
 
         # Draw logo
         dksay "GREEN" "\n\n       __   __\n      |  | |  |  ___\n      |  | |  | /  /\n    __|  | |  |/  /\n  /  _   | |     <\n |  (_|  | |  |\  \ \n  \______| |__| \__\ \n\n "
     elif [ "$1" == '--connectionFailure' ]; then
       dksay "RED"   "\n\n This script requires a stable internet connection to work fully!!" |& tee -a $logFileName
-      dksay "GREEN" "\n Please check your connection settings and re-run the script.\n" |& tee -a $logFileName
+      dksay "NC" "\n Please check your connection settings and re-run the script.\n" |& tee -a $logFileName
       sleep 1s # Hold for user to read
 
       if [ "$2" == '--rollback' ]; then # Check for rollback switch
@@ -284,7 +291,7 @@ function checkForDesktopEnvironment(){
     # Check if desktop environment was found
     if [ -z "$currentDesktopEnvironment" ]; then # (Variable empty) - Desktop environment not found
         dksay "GREEN" "\n No desktop environment found!!" |& tee -a $logFileName
-    else dksay "GREEN" "\n Current desktop environment : $currentDesktopEnvironment" |& tee -a $logFileName # Display choice
+    else dksay "GREEN" "\n Current default desktop environment : $currentDesktopEnvironment" |& tee -a $logFileN               ame # Display choice
     fi
 }
 
@@ -315,8 +322,35 @@ function queryInstallAnotherDesktopEnvironment(){
     done
 }
 
+# Function to install X Window Server (xorg)
+function installXWindowServer(){
+    # Check if XServer is installed
+    check=`dpkg -l |grep xserver-xorg-core`
+
+    # Check for command outp.ut
+    if [[ "$check" == *"ii  xserver-xorg-core"* || "$check" == *"Xorg X server - core server"* ]]; then # XServer found
+        if [ $XServerInstalled -eq 0 ]; then # To display below message only once during runtime
+            dksay "GREEN" "\n Checked for XServer installation.\n ...XServer is already installed."
+            XServerInstalled=1 # Set X Server installed to true.
+            sleep 4s # Hold for user to read
+        fi
+    else # XServer not found
+        # Checking for internet connection before continuing
+        if isConnected; then # Internet connection Established
+            dksay "YELLOW" "\n\n Installing XORG. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+            sleep 6s # Hold for user to read
+            apt-get install xorg -y |& tee -a $logFileName # # Install X window Server
+            sectionBreak
+        else exitScript --connectionFailure # Exit script on connection failure
+        fi
+    fi
+}
+
 # Function to install GNOME Desktop environment
 function installGNOMEDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing GNOME. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -335,7 +369,7 @@ function installGNOMEDesktop(){
         apt-get install gdm3 |& tee -a $logFileName # Install gdm3 if id does not exist
 
         # Check for GNOME setDefault switch
-        if [ "$1" == '--setDefault' ]; then
+        if [ "$2" == '--setDefault' ]; then
             dksay "YELLOW" "\n Setting GNOME as default desktop environment." |& tee -a $logFileName
             sleep 5s # Hold for user to read
             dpkg-reconfigure gdm3 |& tee -a $logFileName
@@ -371,6 +405,9 @@ function installGNOMEDesktop(){
 
 # Function to install KDE PLASMA Desktop environment
 function installKDEPlasmaDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing KDE PLASMA Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -389,6 +426,9 @@ function installKDEPlasmaDesktop(){
 
 # Function to install XFCE Desktop environment
 function installXFCEDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing XFCE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -408,6 +448,9 @@ function installXFCEDesktop(){
 
 # Function to install LXDE Desktop environment
 function installLXDEDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing LXDE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -426,6 +469,9 @@ function installLXDEDesktop(){
 
 # Function to install LXQT Desktop environment
 function installLXQTDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing LXQT Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -444,6 +490,9 @@ function installLXQTDesktop(){
 
 # Function to install CINNAMON Desktop environment
 function installCinnamonDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing Cinnamon Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -462,6 +511,9 @@ function installCinnamonDesktop(){
 
 # Function to install MATE Desktop environment
 function installMateDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing Mate Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -480,6 +532,9 @@ function installMateDesktop(){
 
 # Function to install BUDGIE Desktop environment
 function installBudgieDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing Budgie Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -498,6 +553,9 @@ function installBudgieDesktop(){
 
 # Function to install ENLIGHTENMENT Desktop environment
 function installEnlightenmentDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n\n Installing ENLIGHTENMENT Desktop dependencies." |& tee -a $logFileName
@@ -523,6 +581,9 @@ function installEnlightenmentDesktop(){
 
 # Function to install KODI Desktop environment
 function installKodiDesktop(){
+    # Install X Window Server
+    installXWindowServer
+
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
         dksay "YELLOW" "\n Installing KODI Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
@@ -549,15 +610,16 @@ function installAllDesktopEnvironments(){
     installLXQTDesktop --y # Install LXQT Desktop
     installCinnamonDesktop --y # Install CINNAMON Desktop
     installMateDesktop --y # Install MATE Desktop
-    installGNOMEDesktop --setDefault # Install GNOME Desktop and set it as the default desktop
     installBudgieDesktop --y # Install BUDGIE Desktop
-    installEnlightenmentDesktop --Y # Install ENLIGHTENMENT Desktop
+    installEnlightenmentDesktop --y # Install ENLIGHTENMENT Desktop
+    installKodiDesktop --y # Install KODI
+    installGNOMEDesktop --y --setDefault # Install GNOME Desktop and set it as the default desktop
 
     # Check if all desktop environments were installed
     if [[ "$installedKDEPLASMA" -eq 1 && "$installedXFCE" -eq 1 && "$installedLXDE" -eq 1 && "$installedLXQT" -eq 1 && "$installedCINNAMON" -eq 1
           && "$installedMATE" -eq 1 && "$installedGNOME" -eq 1 && "$installedBUDGIE" -eq 1 && "$installedENLIGHTENMENT" -eq 1 ]];
     then # Installed all desktop environment
-        installedAllEnvironments=$[installedAllEnvironments + 1] # Set installed all to true using integer
+        installedAllEnvironments=1 # Set installed all to true using integer
     fi
 }
 
@@ -646,7 +708,7 @@ function installDesktopEnvironment(){
             # This ensures that they are not forced to make GNOME Desktop as their default if they were running any other desktop environment
             # This stage will be skipped if another desktop environment was found during check.
             if [ -z "$currentDesktopEnvironment" ]; then # (Variable empty) - Desktop environment not found
-                installGNOMEDesktop --setDefault # Install GNOME Desktop and set it as the default desktop
+                installGNOMEDesktop --y --setDefault # Install GNOME Desktop and set it as the default desktop
             else
                 installGNOMEDesktop # Install GNOME Desktop
             fi
@@ -906,25 +968,25 @@ function initSetupDesktopEnvironments(){
 ########
 initLogFile # Initiate log file
 
-dksay "RED" 		"\n\n Hello there user $USER. \n" |& tee -a $logFileName
+dksay "RED" 		"\n\n Hello there user $USER!!. \n" |& tee -a $logFileName
 dksay "YELLOW"	" This script will help you install some or all listed desktop environments into your debian or ubuntu linux.\n" |& tee -a $logFileName
-sleep 13s # Hold for user to read
+sleep 10s # Hold for user to read
 
 # Check if user is running as root
 declare -l user=$USER # Declare user variable as lowercase
 if [ "$user" != 'root' ]; then
-      dksay "YELLOW" "\n This script works best when run as root.\n Please run it as root if you encounter any issues.\n" |& tee -a $logFileName
-      sleep 3s # Hold for user to read
+    dksay "YELLOW" "\n This script works best when run as root.\n Please run it as root if you encounter any issues.\n" |& tee -a $logFileName
+    sleep 4s # Hold for user to read
 fi
 sectionBreak
 
-dksay "GREEN" " Script     : $scriptName"
-dksay "GREEN" " Version    : 2.0" |& tee -a $logFileName
+dksay "GREEN" " Script     : $scriptName" |& tee -a $logFileName
+dksay "GREEN" " Version    : $scriptVersion" |& tee -a $logFileName
 dksay "GREEN" " License    : MIT" |& tee -a $logFileName
 dksay "GREEN" " Author     : David Kariuki (dk)\n" |& tee -a $logFileName
 
 dksay "GREEN" "\n Initializing script...!!\n" |& tee -a $logFileName
-sleep 3s # Hold for user to read
+sleep 4s # Hold for user to read
 
 # Checking for internet connection before continuing
 if ! isConnected; then # Internet connection failed
@@ -941,7 +1003,7 @@ checkForDesktopEnvironment
 installDesktopEnvironment
 
 # Exit script
-exitScript --end |& tee -a $logFileName
+exitScript --end
 sleep 3s # Hold for user to read
 
 # Initiate and setup newly installed desktop environments for users
