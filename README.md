@@ -1,7 +1,9 @@
 # debian-install-desktop-environment-cli.sh
 Current version: `Version 3.0`
 
-This script helps debian users install a preferred desktop environment from a list of options on a terminal menu. The script runs on the terminal. The list of desktop environments listed are:
+This script helps debian users install a preferred desktop environment from a list of options on a terminal menu. 
+It will update system packages and upgrade software packages. 
+The list of desktop environments listed are:
   1.  `GNOME` Desktop,
   2.  `KDE PLASMA` Desktop,
   3.  `XFCE` Desktop,
