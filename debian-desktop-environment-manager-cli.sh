@@ -286,13 +286,14 @@ function checkForDesktopEnvironment(){
     dksay "YELLOW" "\n Checking for desktop environment.." |& tee -a $logFileName
     sleep 3s # Hold for user to read
     if [ "$XDG_CURRENT_DESKTOP" = "" ]; then # Check for current desktop environment
-        currentDesktopEnvironment=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(xfce\|kde\|gnome\).*/\1/') # Test for XFCE, KDE PLASMA Desktop and Gnome  Desktops with GNU grep
+        # Test for installed  Desktop environments
+        currentDesktopEnvironment=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(gnome\|kde\|xfce\|lxde\|lxqt\|cinnamon\|mate\|budgie\|enlightenment\|kodi\).*/\1/')
     else currentDesktopEnvironment=$XDG_CURRENT_DESKTOP # Get XDG current desktop
     fi
     # Check if desktop environment was found
     if [ -z "$currentDesktopEnvironment" ]; then # (Variable empty) - Desktop environment not found
         dksay "GREEN" "\n No desktop environment found!!" |& tee -a $logFileName
-    else dksay "GREEN" "\n Current default desktop environment : $currentDesktopEnvironment" |& tee -a $logFileN               ame # Display choice
+    else dksay "GREEN" "\n Current default desktop environment : $currentDesktopEnvironment" |& tee -a $logFileName # Display choice
     fi
 }
 
@@ -304,18 +305,17 @@ function checkSetDefaultDesktopEnvironment(){
 }
 
 # Function to query if user wants to install another desktop environment after installing the previous
-# This is for users who want to install some but not all desktop environments
 function queryInstallAnotherDesktopEnvironment(){
     while true; do # Start infinite loop
         # Prompt user to set GNOME Desktop as default
         dksay "YELLOW" "\n Would you like to install another desktop environment?\n\t1. Y (Yes) - to install another.\n\t2. N (No) to cancel." |& tee -a $logFileName
-        read -p ' option: ' qryChoice
-        qryChoice=${qryChoice,,} # Convert to lowercase
-        dksay "GREEN" " You chose : $qryChoice" |& tee -a $logFileName # Display choice
+        read -p ' option: ' queryinstChoice
+        queryinstChoice=${queryinstChoice,,} # Convert to lowercase
+        dksay "GREEN" " You chose : $queryinstChoice" |& tee -a $logFileName # Display choice
 
-        if  [[ "$qryChoice" == 'yes' || "$qryChoice" == 'y' || "$qryChoice" == '1' ]]; then # Option : Yes
+        if  [[ "$queryinstChoice" == 'yes' || "$queryinstChoice" == 'y' || "$queryinstChoice" == '1' ]]; then # Option : Yes
             return $(true) # Exit loop returning true
-        elif [[ "$qryChoice" == 'no' || "$qryChoice" == 'n' || "$qryChoice" == '2' ]]; then # Option : No
+        elif [[ "$queryinstChoice" == 'no' || "$queryinstChoice" == 'n' || "$queryinstChoice" == '2' ]]; then # Option : No
             return $(false) # Exit loop returning false
         else dksay "GREEN" "\n Invalid entry!! Please try again." |& tee -a $logFileName # Invalid entry
         fi
@@ -629,78 +629,78 @@ function installDesktopEnvironment(){
     declare -l reEnteredChoice="false"
     while true; do # Start infinite loop
         if [ "$reEnteredChoice" == 'false' ]; then
-        dksay "YELLOW" "\n Please select the desktop environment to install from the options below." |& tee -a $logFileName
-        sleep 4s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m1. GNOME Desktop\e[0m: (gdm3)
-                    \n\t\tGNOME is noteworthy for its efforts in usability and accessibility. Design professionals have been involved
-                    in writing standards and recommendations. This has helped developers to create satisfying graphical user interfaces.
-                    For administrators, GNOME seems to be better prepared for massive deployments. Many programming languages can be used
-                    in developing applications interfacing to GNOME." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m2. KDE PLASMA Desktop\e[0m: (sddm)
-                    \n\t\tKDE has had a rapid evolution based on a very hands-on approach.
-                    KDE PLASMA Desktop is a perfectly mature desktop environment with a wide range of applications." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m3. XFCE Desktop \e[0m: (lightdm)
-                    \n\t\tXfce is a simple and lightweight graphical desktop, a perfect match for computers with limited resources.
-                    Xfce is based on the GTK+ toolkit, and several components are common across both desktops but does not aim at
-                    being a vast project. Beyond the basic components of a modern desktop, it only provides a few specific
-                    applications: a terminal, a calendar (Orage), an image viewer, a CD/DVD burning tool, a media player (Parole),
-                    sound volume control and a text editor (mousepad)." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m4. LXDE Desktop \e[0m:
-                    \n\t\tLXDE is written in the C programming language, using the GTK+ 2 toolkit, and runs on Unix and
-                    other POSIX-compliant platforms, such as Linux and BSDs. The LXDE project aims to provide a fast
-                    and energy-efficient desktop environment with low memory usage." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m5. LXQT Desktop \e[0m:
-                    \n\t\tLXQt is an advanced, easy-to-use, and fast desktop environment based on Qt technologies. It has been
-                    tailored for users who value simplicity, speed, and an intuitive interface. Unlike most desktop environments,
-                    LXQt also works fine with less powerful machines." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m6. CINNAMON Desktop \e[0m:
-                    \n\t\tCinnamon is a free and open-source desktop environment for the X Window System that derives from GNOME 3 but follows
-                    traditional desktop metaphor conventions. Cinnamon is the principal desktop environment of the Linux Mint distribution and
-                    is available as an optional desktop for other Linux distributions and other Unix-like operating systems as well." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m7. Mate Desktop \e[0m:
-                    \n\t\tThe MATE Desktop Environment is the continuation of GNOME 2. It provides an intuitive and attractive desktop environment
-                    using traditional metaphors for Linux and other Unix-like operating systems. MATE is under active development to add support
-                    for new technologies while preserving a traditional desktop experience. Mate feels old school." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m8. Budgie Desktop \e[0m:
-                    \n\t\tBudgie is the popular desktop environment of the Solus OS distribution. It\’s quickly gained in popularity and spread around
-                    the Linux world. Budgie desktop tightly integrates with the GNOME stack, employing underlying technologies to offer an alternative
-                    desktop experience. Budgie applications generally use GTK and header bars similar to GNOME applications. Budgie builds what is effectively
-                    a Favorites list automatically as the user works, moving categories and applications toward the top of menus when they are used." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m9. Enlightenment Desktop \e[0m:
-                    \n\t\tEnlightenment is an advanced window manager for X11. Unique features include: a fully animated background, nice drop shadows around
-                    windows, backed by an extremely clean and optimized foundation of APIs." |& tee -a $logFileName
-        dksay "NC" "
-        \t\e[1;32m10. Kodi Desktop \e[0m:
-                    \n\t\tKodi spawned from the love of media. It is an entertainment hub that brings all your digital media together into a beautiful and user
-                    friendly package. It is 100% free and open source, very customisable and runs on a wide variety of devices. It is supported by a dedicated team
-                    of volunteers and a huge community." |& tee -a $logFileName
-        dksay "NC" "
-        \t\e[1;32m11. Install all of them \e[0m: This will set GNOME Desktop as your default desktop environment." |& tee -a $logFileName
-        sleep 1s # Hold for user to read
-        dksay "NC" "
-        \t\e[1;32m12 or 0. To Skip / Cancel \e[0m: This will skip desktop environment installation." |& tee -a $logFileName
-        sleep 1s
+            dksay "YELLOW" "\n Please select the desktop environment to install from the options below." |& tee -a $logFileName
+            sleep 4s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m1. GNOME Desktop\e[0m: (gdm3)
+                        \n\t\tGNOME is noteworthy for its efforts in usability and accessibility. Design professionals have been involved
+                        in writing standards and recommendations. This has helped developers to create satisfying graphical user interfaces.
+                        For administrators, GNOME seems to be better prepared for massive deployments. Many programming languages can be used
+                        in developing applications interfacing to GNOME." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m2. KDE PLASMA Desktop\e[0m: (sddm)
+                        \n\t\tKDE has had a rapid evolution based on a very hands-on approach.
+                        KDE PLASMA Desktop is a perfectly mature desktop environment with a wide range of applications." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m3. XFCE Desktop \e[0m: (lightdm)
+                        \n\t\tXfce is a simple and lightweight graphical desktop, a perfect match for computers with limited resources.
+                        Xfce is based on the GTK+ toolkit, and several components are common across both desktops but does not aim at
+                        being a vast project. Beyond the basic components of a modern desktop, it only provides a few specific
+                        applications: a terminal, a calendar (Orage), an image viewer, a CD/DVD burning tool, a media player (Parole),
+                        sound volume control and a text editor (mousepad)." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m4. LXDE Desktop \e[0m:
+                        \n\t\tLXDE is written in the C programming language, using the GTK+ 2 toolkit, and runs on Unix and
+                        other POSIX-compliant platforms, such as Linux and BSDs. The LXDE project aims to provide a fast
+                        and energy-efficient desktop environment with low memory usage." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m5. LXQT Desktop \e[0m:
+                        \n\t\tLXQt is an advanced, easy-to-use, and fast desktop environment based on Qt technologies. It has been
+                        tailored for users who value simplicity, speed, and an intuitive interface. Unlike most desktop environments,
+                        LXQt also works fine with less powerful machines." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m6. CINNAMON Desktop \e[0m:
+                        \n\t\tCinnamon is a free and open-source desktop environment for the X Window System that derives from GNOME 3 but follows
+                        traditional desktop metaphor conventions. Cinnamon is the principal desktop environment of the Linux Mint distribution and
+                        is available as an optional desktop for other Linux distributions and other Unix-like operating systems as well." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m7. Mate Desktop \e[0m:
+                        \n\t\tThe MATE Desktop Environment is the continuation of GNOME 2. It provides an intuitive and attractive desktop environment
+                        using traditional metaphors for Linux and other Unix-like operating systems. MATE is under active development to add support
+                        for new technologies while preserving a traditional desktop experience. Mate feels old school." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m8. Budgie Desktop \e[0m:
+                        \n\t\tBudgie is the popular desktop environment of the Solus OS distribution. It\’s quickly gained in popularity and spread around
+                        the Linux world. Budgie desktop tightly integrates with the GNOME stack, employing underlying technologies to offer an alternative
+                        desktop experience. Budgie applications generally use GTK and header bars similar to GNOME applications. Budgie builds what is effectively
+                        a Favorites list automatically as the user works, moving categories and applications toward the top of menus when they are used." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m9. Enlightenment Desktop \e[0m:
+                        \n\t\tEnlightenment is an advanced window manager for X11. Unique features include: a fully animated background, nice drop shadows around
+                        windows, backed by an extremely clean and optimized foundation of APIs." |& tee -a $logFileName
+            dksay "NC" "
+            \t\e[1;32m10. Kodi Desktop \e[0m:
+                        \n\t\tKodi spawned from the love of media. It is an entertainment hub that brings all your digital media together into a beautiful and user
+                        friendly package. It is 100% free and open source, very customisable and runs on a wide variety of devices. It is supported by a dedicated team
+                        of volunteers and a huge community." |& tee -a $logFileName
+            dksay "NC" "
+            \t\e[1;32m11. Install all of them \e[0m: This will set GNOME Desktop as your default desktop environment." |& tee -a $logFileName
+            sleep 1s # Hold for user to read
+            dksay "NC" "
+            \t\e[1;32m12 or 0. To Skip / Cancel \e[0m: This will skip desktop environment installation." |& tee -a $logFileName
+            sleep 1s
 
-        read -p ' option: ' choice
-        choice=${choice,,} # Convert to lowercase
-        dksay "GREEN" " You chose : $choice" |& tee -a $logFileName # Display choice
+            read -p ' option: ' choice
+            choice=${choice,,} # Convert to lowercase
+            dksay "GREEN" " You chose : $choice" |& tee -a $logFileName # Display choice
         fi
         # Check chosen option
         if  [[ "$choice" == '1' || "$choice" == 'gnome' ]]; then # Option : GNOME Desktop
@@ -720,7 +720,7 @@ function installDesktopEnvironment(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-        elif  [[ "$choice" == '2' || "$choice" == 'kde' || "$choice" == 'kde plasma' || "$choice" == 'kdeplasma' || "$choice" == 'kde-plasma' ]]; then # Option : KDE PLASMA Desktop
+        elif  [[ "$choice" == '2' || "$choice" == 'kde' || "$choice" == 'kde plasma' || "$choice" == 'kdeplasma' ]]; then # Option : KDE PLASMA Desktop
             installKDEPlasmaDesktop # Install KDE PLASMA Desktop Desktop
 
             # Query if user wants to install another desktop environment after installing the previous
