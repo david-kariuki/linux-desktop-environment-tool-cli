@@ -29,4 +29,7 @@
 **Version 3.1:**
 1. Added feature to install `X Window Server`.
 2. Logs feature bug fixes.
-3. Changed name from *`debian-install-desktop-environment-cli.sh`* to *`debian-desktop-environment-manager-cli.sh`*
+3. Changed name from `debian-install-desktop-environment-cli.sh` to `debian-desktop-environment-manager-cli.sh`
+
+**Version 3.2:**
+1. Added feature to install missing desktop environments base packages and some extras.
