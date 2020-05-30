@@ -3,7 +3,7 @@
 # Common code & words docs
 # dksay - Custom function to create a custom coloured print
 # |& tee -a $logFileName - append output stream to logs and output to terminal
-declare -r scriptVersion="3.1" # Stores scripts version
+declare -r scriptVersion="3.2" # Stores scripts version
 declare -i setupCancelled=0 # Stores value to indicate setup cancellation
 declare -l currentDesktopEnvironment="" # Stores the value of the current installed desktop environment
 declare -l installedGNOME=0 # Stores true or false in integer if GNOME Desktop was installed
@@ -107,6 +107,7 @@ function isConnected(){
     done
 }
 
+
 # Function to log scripts' changelogs
 function logChangeLogs(){
     dksay "YELLOW"  "\n\n Logging ChangeLogs." |& tee -a $logFileName # Log while showing on terminal
@@ -147,8 +148,13 @@ function logChangeLogs(){
         \n\t\t a. Added feature to install X Window Server.
         \n\t\t b. Logs feature bug fixes.
         \n\t\t c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh " &>> $logFileName # Log without showing on terminal
-
     sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 3.2:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. Added feature to install missing desktop environments base packages and some extras.
+        \n\t\t b. Logs feature bug fixes. " &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+
     dksay "GREEN" "\n ChangeLogs logging completed."
     sectionBreak
 }
@@ -286,7 +292,7 @@ function checkForDesktopEnvironment(){
     dksay "YELLOW" "\n Checking for desktop environment.." |& tee -a $logFileName
     sleep 3s # Hold for user to read
     if [ "$XDG_CURRENT_DESKTOP" = "" ]; then # Check for current desktop environment
-        # Test for installed  Desktop environments
+        # Check for installed  Desktop environments
         currentDesktopEnvironment=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(gnome\|kde\|xfce\|lxde\|lxqt\|cinnamon\|mate\|budgie\|enlightenment\|kodi\).*/\1/')
     else currentDesktopEnvironment=$XDG_CURRENT_DESKTOP # Get XDG current desktop
     fi
@@ -309,13 +315,13 @@ function queryInstallAnotherDesktopEnvironment(){
     while true; do # Start infinite loop
         # Prompt user to set GNOME Desktop as default
         dksay "YELLOW" "\n Would you like to install another desktop environment?\n\t1. Y (Yes) - to install another.\n\t2. N (No) to cancel." |& tee -a $logFileName
-        read -p ' option: ' queryinstChoice
-        queryinstChoice=${queryinstChoice,,} # Convert to lowercase
-        dksay "GREEN" " You chose : $queryinstChoice" |& tee -a $logFileName # Display choice
+        read -p ' option: ' queryInstChoice
+        queryInstChoice=${queryInstChoice,,} # Convert to lowercase
+        dksay "GREEN" " You chose : $queryInstChoice" |& tee -a $logFileName # Display choice
 
-        if  [[ "$queryinstChoice" == 'yes' || "$queryinstChoice" == 'y' || "$queryinstChoice" == '1' ]]; then # Option : Yes
+        if  [[ "$queryInstChoice" == 'yes' || "$queryInstChoice" == 'y' || "$queryInstChoice" == '1' ]]; then # Option : Yes
             return $(true) # Exit loop returning true
-        elif [[ "$queryinstChoice" == 'no' || "$queryinstChoice" == 'n' || "$queryinstChoice" == '2' ]]; then # Option : No
+        elif [[ "$queryInstChoice" == 'no' || "$queryInstChoice" == 'n' || "$queryInstChoice" == '2' ]]; then # Option : No
             return $(false) # Exit loop returning false
         else dksay "GREEN" "\n Invalid entry!! Please try again." |& tee -a $logFileName # Invalid entry
         fi
@@ -357,8 +363,8 @@ function installGNOMEDesktop(){
         dksay "YELLOW" "\n\n Installing GNOME. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install gnome -y |& tee -a $logFileName # Install full GNOME with confirmation
-        else apt-get install gnome |& tee -a $logFileName # Install full GNOME without confirmation
+            apt-get install gnome task-gnome-desktop -y |& tee -a $logFileName # Install full GNOME with confirmation
+        else apt-get install gnome task-gnome-desktop |& tee -a $logFileName # Install full GNOME without confirmation
         fi
         dksay "YELLOW" "\n\n Installing alacarte - Alacarte is a menu editor for the GNOME Desktop, written in Python" |& tee -a $logFileName
         sleep 5s # Hold for user to read
@@ -414,8 +420,8 @@ function installKDEPlasmaDesktop(){
         dksay "YELLOW" "\n\n Installing KDE PLASMA Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install kde-full -y |& tee -a $logFileName # Install KDE PLASMA Desktop without confirmation
-        else apt-get install kde-full |& tee -a $logFileName # Install KDE PLASMA Desktop with confirmation
+            apt-get install kde-full task-kde-desktop -y |& tee -a $logFileName # Install KDE PLASMA Desktop without confirmation
+        else apt-get install kde-full task-kde-desktop |& tee -a $logFileName # Install KDE PLASMA Desktop with confirmation
         fi
         installedKDEPLASMA=$[installedKDEPLASMA + 1] # Set KDE PLASMA Desktop installed to true
         dksay "GREEN" "\n Your KDE PLASMA Desktop is all set." |& tee -a $logFileName
@@ -435,9 +441,8 @@ function installXFCEDesktop(){
         dksay "YELLOW" "\n\n Installing XFCE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install xfce4 -y |& tee -a $logFileName # Install XFCE4 Desktop with confirmation
-        else
-            apt-get install xfce4 |& tee -a $logFileName # Install XFCE4 Desktop without confirmation
+            apt-get install xfce4 task-xfce-desktop -y |& tee -a $logFileName # Install XFCE4 Desktop with confirmation
+        else apt-get install xfce4 task-xfce-desktop |& tee -a $logFileName # Install XFCE4 Desktop without confirmation
         fi
         installedXFCE=$[installedXFCE + 1] # Set XFCE Desktop installed to true
         dksay "GREEN" "\n Your XFCE Desktop is all set." |& tee -a $logFileName
@@ -457,8 +462,8 @@ function installLXDEDesktop(){
         dksay "YELLOW" "\n\n Installing LXDE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install lxde -y |& tee -a $logFileName # Install LXDE Desktop environment with confirmation
-        else apt-get install lxde |& tee -a $logFileName # Install LXDE Desktop environment without confirmation
+            apt-get install lxde task-lxde-desktop -y |& tee -a $logFileName # Install LXDE Desktop environment with confirmation
+        else apt-get install lxde task-lxde-desktop |& tee -a $logFileName # Install LXDE Desktop environment without confirmation
         fi
         installedLXDE=$[installedLXDE + 1] # Set LXDE Desktop installed to true
         dksay "GREEN" "\n Your LXDE Desktop is all set." |& tee -a $logFileName
@@ -478,8 +483,8 @@ function installLXQTDesktop(){
         dksay "YELLOW" "\n\n Installing LXQT Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install lxqt sddm -y |& tee -a $logFileName # Install LXQT Desktop environment with confirmation
-        else apt-get install lxqt sddm |& tee -a $logFileName # Install LXQT Desktop environment without confirmation
+            apt-get install lxqt sddm task-lxqt-desktop -y |& tee -a $logFileName # Install LXQT Desktop environment with confirmation
+        else apt-get install lxqt sddm task-lxqt-desktop |& tee -a $logFileName # Install LXQT Desktop environment without confirmation
         fi
         installedLXQT=$[installedLXQT + 1] # Set LXQT Desktop installed to true
         dksay "GREEN" "\n Your LXQT Desktop is all set." |& tee -a $logFileName
@@ -499,8 +504,8 @@ function installCinnamonDesktop(){
         dksay "YELLOW" "\n\n Installing Cinnamon Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install cinnamon-desktop-environment -y |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment with confirmation
-        else apt-get install cinnamon-desktop-environment |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment without confirmation
+            apt-get install cinnamon-desktop-environment task-cinnamon-desktop -y |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment with confirmation
+        else apt-get install cinnamon-desktop-environment task-cinnamon-desktop |& tee -a $logFileName # Install ENLIGHTENMENT Desktop environment without confirmation
         fi
         installedCINNAMON=$[installedCINNAMON + 1] # Set CINNAMON Desktop installed to true
         dksay "GREEN" "\n Your Cinnamon Desktop is all set." |& tee -a $logFileName
@@ -520,8 +525,15 @@ function installMateDesktop(){
         dksay "YELLOW" "\n\n Installing Mate Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
         sleep 6s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
-            apt-get install task-mate-desktop -y |& tee -a $logFileName # Install MATE Desktop environment with confirmation
-        else apt-get install task-mate-desktop |& tee -a $logFileName # Install MATE Desktop environment without confirmation
+            apt-get install mate-desktop-environment task-mate-desktop -y |& tee -a $logFileName # Install MATE Desktop environment with confirmation
+            dksay "YELLOW" "\n\n Installing Mate Extras..." |& tee -a $logFileName
+            sleep 3s # Hold for user to read
+            apt-get install mate-desktop-environment-extras -y |& tee -a $logFileName # Install MATE Desktop environment Extras
+        else
+          apt-get install mate-desktop-environment task-mate-desktop |& tee -a $logFileName # Install MATE Desktop environment without confirmation
+          dksay "YELLOW" "\n\n Installing Mate Extras..." |& tee -a $logFileName
+          sleep 3s # Hold for user to read
+          apt-get install mate-desktop-environment-extras |& tee -a $logFileName # Install MATE Desktop environment Extras
         fi
         installedMATE=$[installedMATE + 1] # Set MATE Desktop installed to true
         dksay "GREEN" "\n Your Mate Desktop is all set." |& tee -a $logFileName
@@ -538,11 +550,14 @@ function installBudgieDesktop(){
 
     # Checking for internet connection before continuing
     if isConnected; then # Internet connection Established
-        dksay "YELLOW" "\n\n Installing Budgie Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-        sleep 6s # Hold for user to read
+        dksay "YELLOW" "\n\n Installing Budgie Desktop. This will install GNOME if it is not installed as it depends on it.\n This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+        sleep 8s # Hold for user to read
         if [ "$1" == '--y' ]; then # Check for yes switch to install without confirmation
             apt-get install budgie-desktop budgie-indicator-applet -y |& tee -a $logFileName # Install BUDGIE Desktop environment with confirmation
-        else apt-get install budgie-desktop budgie-indicator-applet |& tee -a $logFileName # Install BUDGIE Desktop environment without confirmation
+            apt-get install budgie.desktop -y |& tee -a $logFileName # Install BUDGIE Desktop environment with confirmation
+        else
+          apt-get install budgie-desktop budgie-indicator-applet |& tee -a $logFileName # Install BUDGIE Desktop environment without confirmation
+          apt-get install budgie.desktop |& tee -a $logFileName # Install BUDGIE Desktop environment without confirmation
         fi
         installedBUDGIE=$[installedBUDGIE + 1] # Set BUDGIE Desktop installed to true
         dksay "GREEN" "\n Your BUDGIE Desktop is all set." |& tee -a $logFileName
@@ -604,7 +619,8 @@ function installKodiDesktop(){
 # Function to install all desktop environments
 function installAllDesktopEnvironments(){
     # Install all desktop environments
-    dksay "PURPLE" "\n\n Installing all $numberOfDesktopEnvironments desktop environments... Please wait!\n"
+    dksay "PURPLE" "\n\n Installing all $numberOfDesktopEnvironments desktop environments. This may take time depending on your internet connection. Please wait!\n"
+    sleep 5s # Hold for user to read
     installKDEPlasmaDesktop --y # Install KDE PLASMA Desktop
     installXFCEDesktop --y # Install XFCE Desktop
     installLXDEDesktop --y # Install LXDE Desktop
@@ -680,7 +696,8 @@ function installDesktopEnvironment(){
                         \n\t\tBudgie is the popular desktop environment of the Solus OS distribution. It\’s quickly gained in popularity and spread around
                         the Linux world. Budgie desktop tightly integrates with the GNOME stack, employing underlying technologies to offer an alternative
                         desktop experience. Budgie applications generally use GTK and header bars similar to GNOME applications. Budgie builds what is effectively
-                        a Favorites list automatically as the user works, moving categories and applications toward the top of menus when they are used." |& tee -a $logFileName
+                        a Favorites list automatically as the user works, moving categories and applications toward the top of menus when they are used.
+                        It will install the minimal GNOME based package-set together with the key budgie-desktop packages to produce a working desktop environment." |& tee -a $logFileName
             sleep 1s # Hold for user to read
             dksay "NC" "
             \t\e[1;32m9. Enlightenment Desktop \e[0m:
@@ -696,7 +713,7 @@ function installDesktopEnvironment(){
             sleep 1s # Hold for user to read
             dksay "NC" "
             \t\e[1;32m12 or 0. To Skip / Cancel \e[0m: This will skip desktop environment installation." |& tee -a $logFileName
-            sleep 1s
+            sleep 1s # Hold loop
 
             read -p ' option: ' choice
             choice=${choice,,} # Convert to lowercase
@@ -1003,10 +1020,9 @@ checkForDesktopEnvironment
 # Show install desktop environment options
 installDesktopEnvironment
 
-# Exit script
-exitScript --end
-sleep 3s # Hold for user to read
-
 # Initiate and setup newly installed desktop environments for users
 # who did not have a desktop environment at the beginning
 initSetupDesktopEnvironments
+
+# Exit script
+exitScript --end
