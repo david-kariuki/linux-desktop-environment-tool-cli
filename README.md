@@ -1,5 +1,5 @@
 # debian-desktop-environment-manager-cli.sh
-**Current version: `Version 3.1`**
+**Current version: `Version 3.2`**
 
 This script helps Debian users install a preferred desktop environment from a list of options on a terminal menu.
 It will *`update`* system packages and *`upgrade`* software packages.
