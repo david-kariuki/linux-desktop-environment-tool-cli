@@ -18,7 +18,7 @@ The list of desktop environments listed are:
 
 
 To use this script:
-  1. Click on *`clone`* or *`download`.
+  1. Click on *`clone`* or *`download`*.
   2. Click on *`Download Zip`*.
   3. Extract the zip in your computers' download address. You will see a file labelled *`debian-desktop-environment-manager-cli.sh`*
   4. Open terminal at the files location by right clicking and selecting *`Open in terminal`*. You can as well launch your terminal and navigate to where the downloaded file is.
