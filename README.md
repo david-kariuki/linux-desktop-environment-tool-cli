@@ -14,7 +14,7 @@ The list of desktop environments listed are:
   7.  `MATE` Desktop,
   8.  `BUDGIE` Desktop,
   9.  `ENLIGHTENMENT` Desktop and
-  10. `KODI`
+  10. `KODI.`
 
 
 To use this script:
