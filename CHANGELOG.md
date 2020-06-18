@@ -33,3 +33,7 @@
 
 **Version 3.2:**
 1. Added feature to install missing desktop environments base packages and some extras.
+
+**Version 3.3:**
+1. Added feature to uninstall existing desktop environments.
+2. Bug fixes that caused the script to run upgrades and updates when the script was canceled.
