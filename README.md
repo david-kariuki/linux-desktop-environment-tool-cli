@@ -16,6 +16,7 @@ The list of desktop environments listed are:
   10. `KODI.`
 
 
+\
 To use this script:
   1. Click on *`clone`* or *`download`*.
   2. Click on *`Download Zip`*.
@@ -23,3 +24,10 @@ To use this script:
   4. Open terminal at the files location by right clicking and selecting *`Open in terminal`*. You can as well launch your terminal and navigate to where the downloaded file is.
   5. Type **`chmod +x debian-desktop-environment-manager-cli.sh`** and click enter to make the script executable.
   6. Type **`./debian-desktop-environment-manager-cli.sh`** to run the script.
+
+\
+\
+When the script starts, it will present you with a 3 option main menu as below:
+  1. `Install a desktop environment.`
+  2. `Uninstall/remove a desktop environment.`
+  3. `Cancel/Exit.` 
