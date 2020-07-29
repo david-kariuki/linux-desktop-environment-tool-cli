@@ -143,14 +143,14 @@ function initScript(){
   holdTerminal 7 # Hold for user to read
 
   # Check if user is running as root
-  checkIfRunningAsRoot
+  checkIfUserIsRoot
   sectionBreak
 
   showScriptInfo # Show Script Information
 }
 
 # Function to check if user is running as root
-function checkIfRunningAsRoot(){
+function checkIfUserIsRoot(){
     declare -l -r user=$USER # Declare user variable as lowercase
     if [ "$user" != 'root' ]; then
         cPrint "RED" "This script works fully when run as root.\n Please run it as root to avoid issues/errors.\n" |& tee -a $logFileName
