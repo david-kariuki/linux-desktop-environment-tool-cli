@@ -6,7 +6,7 @@
 
 declare -r targetLinux="Debian Linux"
 declare -r scriptVersion="3.4" # Stores scripts version
-declare -l -r scriptName="debian-desktop-environment-manager-cli" # Stores script file name (Set to lowers and read-only)
+declare -l -r scriptName="linux-desktop-environment-toolkit-cli" # Stores script file name (Set to lowers and read-only)
 declare -l -r logFileName="$scriptName-logs.txt" # Stores script log-file name (Set to lowers and read-only)
 declare -i -r numberOfDesktopEnvironments=10 # Stores total number of desktop environments
 declare -l -r networkTestUrl="www.google.com" # Stores the networkTestUrl (Set to lowers and read-only)
@@ -214,34 +214,47 @@ function logChangeLogs(){
         \n\t\t e. LXQT Desktop environment.
         \n\t\t f. CINNAMON Desktop environment.
         \n\t\t g. MATE Desktop environment. " &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 1.1:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment\n\t\t    for users who initially, did not have any desktop environment installed."  &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 1.2:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. Changed KDE installation from standard installation to full installation.
         \n\t\t b. Fixed some bugs including one that made installing all desktop environments a problem." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 2.0:" &>> $logFileName # Log without showing on terminal
     dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. BUDGIE Desktop environment.
         \n\t\t b. ENLIGHTENMENT Desktop environment." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 3.0:" &>> $logFileName # Log without showing on terminal
     dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. KODI Desktop environment."&>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 3.1:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. Added feature to install X Window Server.
         \n\t\t b. Logs feature bug fixes.
         \n\t\t c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh " &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 3.2:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. Added feature to install missing desktop environments base packages and some extras." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
     dksay "GREEN"   "\n Version 3.3:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. Added feature to uninstall existing desktop environments.
         \n\t\t b. Bug fixes that caused the script to run upgrades and updates when the script was canceled. " &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 3.3.1:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. Changed name from debian-desktop-environment-manager-cli.sh to linux-desktop-environment-toolkit-cli.sh
+        \n\t\t b. Minor refractoring." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
 
     dksay "GREEN" "\n ChangeLogs logging completed."
     sectionBreak
