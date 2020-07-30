@@ -17,13 +17,13 @@ The list of desktop environments listed are:
 
 
 \
-To use this script:
-  1. Click on *`clone`* or *`download`*.
-  2. Click on *`Download Zip`*.
-  3. Extract the zip in your computers' download address. You will see a file labelled *`debian-desktop-environment-manager-cli.sh`*
+To download and use this script:
+  1. Click on *`code`* on this page.
+  2. Click on *`Download ZIP`*.
+  3. A file named *`linux-desktop-environment-toolkit-cli-master.zip`* will be downloaded. Extract the zip file in your computer. You will see a folder labelled *`linux-desktop-environment-toolkit-cli-master`*. Navigate to that folder.
   4. Open terminal at the files location by right clicking and selecting *`Open in terminal`*. You can as well launch your terminal and navigate to where the downloaded file is.
-  5. Type **`chmod +x debian-desktop-environment-manager-cli.sh`** and click enter to make the script executable.
-  6. Type **`./debian-desktop-environment-manager-cli.sh`** to run the script.
+  5. Type **`chmod +x linux-desktop-environment-toolkit-cli.sh`** and click `enter key` to make the script executable.
+  6. Type **`./linux-desktop-environment-toolkit-cli.sh`** to run the script.
 
 \
 \
