@@ -1,5 +1,7 @@
 # CHANGELOG
 
+**Changelog from version 1.0 - 3.4**
+
 **Version 1.0:**
 1. Added options to install:
    - `GNOME` Desktop environment.
@@ -37,3 +39,13 @@
 **Version 3.3:**
 1. Added feature to uninstall existing desktop environments.
 2. Bug fixes that caused the script to run upgrades and updates when the script was canceled.
+
+**Version 3.4:**
+1. Added feature to indicate if the desktop environments on the installation lists have already been installed.
+2. Bug fixes:
+   - Bugs that prevented `LXDE` desktop environment from being listed on the uninstallation list.
+   - Bugs that prevented automation of the `uninstall all option` to run continuously without single desktop manual purge confirmations.
+
+**Version 3.5:**
+1. Changed name from debian-desktop-environment-manager-cli.sh to linux-desktop-environment-toolkit-cli.sh
+2. Minor refactoring.
