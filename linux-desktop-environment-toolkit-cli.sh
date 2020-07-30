@@ -250,7 +250,14 @@ function logChangeLogs(){
         \n\t\t a. Added feature to uninstall existing desktop environments.
         \n\t\t b. Bug fixes that caused the script to run upgrades and updates when the script was canceled. " &>> $logFileName # Log without showing on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.3.1:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.4:" &>> $logFileName # Log without showing on terminal
+    dksay "NC" "
+        \n\t\t a. Added feature to indicate if the desktop environments on the installation lists have already been installed.
+        \n\t\t b. Bug fixes:
+                  - Bugs that prevented LXDE desktop environment from being listed on the uninstallation list.
+                  - Bugs that prevented automation of the uninstall all option to run continuously without single desktop manual purge confirmations." &>> $logFileName # Log without showing on terminal
+    sleep 1s # Hold for user to read
+    dksay "GREEN"   "\n Version 3.5:" &>> $logFileName # Log without showing on terminal
     dksay "NC" "
         \n\t\t a. Changed name from debian-desktop-environment-manager-cli.sh to linux-desktop-environment-toolkit-cli.sh
         \n\t\t b. Minor refractoring." &>> $logFileName # Log without showing on terminal
