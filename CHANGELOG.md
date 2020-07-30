@@ -47,5 +47,5 @@
    - Bugs that prevented automation of the `uninstall all option` to run continuously without single desktop manual purge confirmations.
 
 **Version 3.5:**
-1. Changed name from debian-desktop-environment-manager-cli.sh to linux-desktop-environment-toolkit-cli.sh
+1. Changed name from `debian-desktop-environment-manager-cli.sh` to `linux-desktop-environment-toolkit-cli.sh`
 2. Minor refactoring.
