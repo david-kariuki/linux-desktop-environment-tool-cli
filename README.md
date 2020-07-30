@@ -1,6 +1,6 @@
-# linux-desktop-environment-toolkit-cli.sh
+# Linux desktop environment toolkit cli
 **Current version: `Version 3.5`**\
-**Best works with Debian and Ubuntu**
+**This script runs on terminal and works best with Debian and Ubuntu**
 
 This script helps Debian and Ubuntu users install the below desktop environments from a list of options on a terminal menu. It also has an uninstall option for the installed desktop environments. The script will *`update`* system packages and *`upgrade`* software packages before installing or uninstalling any desktop environment.
 
