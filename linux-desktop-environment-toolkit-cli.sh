@@ -100,7 +100,7 @@ function holdTerminal(){
 }
 
 # Function to format time from seconds to days:hours:minutes:seconds
-function formatTime () {
+function formatTime() {
     local inputSeconds=$1; local minutes=0; local hour=0; local day=0
     if((inputSeconds>59));then
         ((seconds=inputSeconds%60))
@@ -468,8 +468,7 @@ function getAllInstalledDesktopEnvironments(){
 
     unset uninstallationList installedDesktopEnvironments listOfInstalledDesktopEnvironments
     installedDesktopEnvironments=$(ls -l /usr/share/xsessions/) # Get all installed desktop environments
-    listOfInstalledDesktopEnvironments="You have the following desktop environments installed:\n" |& tee -a $logFileName # Variable to store a list of all installed desktop environments
-    listOfInstalledDesktopEnvironments="\n" # Add line break at the beginning of the list
+    listOfInstalledDesktopEnvironments="" |& tee -a $logFileName # Variable to store a list of all installed desktop environments
     # Checking for individual desktop environment
     if [[ $installedDesktopEnvironments == *"gnome.desktop"* || $installedDesktopEnvironments == *"gnome-classic.desktop"*
        || $installedDesktopEnvironments == *"gnome-flashback-metacity.desktop"* || $installedDesktopEnvironments == *"gnome-xorg.desktop"* ]]; then
@@ -1436,7 +1435,6 @@ function queryUninstallDefaultDesktopEnvironment(){
 function queryPurgeDesktopEnvironment(){
     while true; do # Start infinite loop
         ${clear} # Clear terminal
-
         # Prompt user to set GNOME Desktop as default
         cPrint "NC" "Do you want to remove all \e[1;32m$1\'s\e[0m \e[1;33mfiles and settings too? \n\t1.Y (Yes) -to remove\e[0m \e[1;32m$1\'s\e[0m \e[1;33mfiles and settings.\n\t2. N (No) to skip deleting files.\e[0m" |& tee -a $logFileName
         read -p ' option: ' purgeChoice
