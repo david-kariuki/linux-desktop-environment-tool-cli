@@ -1,4 +1,4 @@
-Display#!/bin/bash
+#!/bin/bash
 
 : ' cPrint - Custom function to create a custom coloured print
     |& tee -a $logFileName - append output stream to logs and output to terminal'
