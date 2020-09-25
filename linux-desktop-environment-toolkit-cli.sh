@@ -1202,7 +1202,7 @@ function installBudgieDesktop(){
         # Checking for internet connection before continuing
         if isConnected
         then # Internet connection Established
-            cPrint "YELLOW" "\n\n Installing BUDGIE Desktop. This will install GNOME as a dependency.\n This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
+            cPrint "YELLOW" "\n\n Installing BUDGIE Desktop. This will install GNOME as a dependencys on it.\n This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
             holdTerminal 8 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
