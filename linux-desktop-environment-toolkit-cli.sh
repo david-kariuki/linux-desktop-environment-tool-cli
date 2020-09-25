@@ -1,4 +1,4 @@
-#!/bin/bash
+Display#!/bin/bash
 
 : ' cPrint - Custom function to create a custom coloured print
     |& tee -a $logFileName - append output stream to logs and output to terminal'
@@ -72,20 +72,20 @@ function sectionBreak(){
     cPrint "NC" "\n" |& tee -a $logFileName # Print without color
 }
 
-# Function to show connection established message
+# Function to display connection established message
 function connEst(){
     cPrint "GREEN" "Internet connection established.\n" |& tee -a $logFileName
     sleep 2s # Hold for user to read
 }
 
-# Function to show connection failed message
+# Function to display connection failed message
 function connFailed(){
     cPrint "RED" "Internet connection failed!!!" |& tee -a $logFileName
     sleep 2s # Hold for user to read
 }
 
-# Function to show script information
-function showScriptInfo(){
+# Function to display script information
+function displayScriptInfo(){
     cPrint "NC" "About\n   Script       : $scriptName.\n   Target Linux : $targetLinux.\n   Version      : $scriptVersion\n   License      : MIT Licence.\n   Developer    : David Kariuki (dk)\n" |& tee -a $logFileName
 }
 
@@ -151,7 +151,7 @@ function initLogFile(){
     currentDate="Date : `date`\n\n" # Get current date
     # Add script actions to script actions array
     scriptActions=( "${scriptActions[@]}" "Created log file" )
-    # Log date without showing on terminal
+    # Log date without displaying on terminal
     printf $currentDate &>> $logFileName
 }
 
@@ -168,7 +168,7 @@ function initScript(){
   checkIfUserIsRoot
   sectionBreak
 
-  showScriptInfo # Show Script Information
+  displayScriptInfo # Display Script Information
 }
 
 # Function to check if user is running as root
@@ -229,10 +229,10 @@ function isConnected(){
 
 # Function to log scripts' changelogs
 function logChangeLogs(){
-    dksay "YELLOW"  "\n\n Logging ChangeLogs." |& tee -a $logFileName # Log while showing on terminal
-    dksay "RED"     "\n $scriptName ChangeLogs." &>> $logFileName # Log without showing on terminal
-    dksay "GREEN"   "\n Version 1.0:" &>> $logFileName # Log without showing on terminal
-    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
+    dksay "YELLOW"  "\n\n Logging ChangeLogs." |& tee -a $logFileName # Log while displaying on terminal
+    dksay "RED"     "\n $scriptName ChangeLogs." &>> $logFileName # Log without displaying on terminal
+    dksay "GREEN"   "\n Version 1.0:" &>> $logFileName # Log without displaying on terminal
+    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. GNOME Desktop environment.
         \n\t\t b. KDE PLASMA Desktop environment.
@@ -240,54 +240,54 @@ function logChangeLogs(){
         \n\t\t d. LXDE Desktop environment.
         \n\t\t e. LXQT Desktop environment.
         \n\t\t f. CINNAMON Desktop environment.
-        \n\t\t g. MATE Desktop environment. " &>> $logFileName # Log without showing on terminal
+        \n\t\t g. MATE Desktop environment. " &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 1.1:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 1.1:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
-        \n\t\t a. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment\n\t\t    for users who initially, did not have any desktop environment installed."  &>> $logFileName # Log without showing on terminal
+        \n\t\t a. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment\n\t\t    for users who initially, did not have any desktop environment installed."  &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 1.2:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 1.2:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. Changed KDE installation from standard installation to full installation.
-        \n\t\t b. Fixed some bugs including one that made installing all desktop environments a problem." &>> $logFileName # Log without showing on terminal
+        \n\t\t b. Fixed some bugs including one that made installing all desktop environments a problem." &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 2.0:" &>> $logFileName # Log without showing on terminal
-    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 2.0:" &>> $logFileName # Log without displaying on terminal
+    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. BUDGIE Desktop environment.
-        \n\t\t b. ENLIGHTENMENT Desktop environment." &>> $logFileName # Log without showing on terminal
+        \n\t\t b. ENLIGHTENMENT Desktop environment." &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.0:" &>> $logFileName # Log without showing on terminal
-    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.0:" &>> $logFileName # Log without displaying on terminal
+    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
-        \n\t\t a. KODI Desktop environment."&>> $logFileName # Log without showing on terminal
+        \n\t\t a. KODI Desktop environment."&>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.1:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.1:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. Added feature to install X Window Server.
         \n\t\t b. Logs feature bug fixes.
-        \n\t\t c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh " &>> $logFileName # Log without showing on terminal
+        \n\t\t c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh " &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.2:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.2:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
-        \n\t\t a. Added feature to install missing desktop environments base packages and some extras." &>> $logFileName # Log without showing on terminal
+        \n\t\t a. Added feature to install missing desktop environments base packages and some extras." &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.3:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.3:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. Added feature to uninstall existing desktop environments.
-        \n\t\t b. Bug fixes that caused the script to run upgrades and updates when the script was canceled. " &>> $logFileName # Log without showing on terminal
+        \n\t\t b. Bug fixes that caused the script to run upgrades and updates when the script was canceled. " &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.4:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.4:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. Added feature to indicate if the desktop environments on the installation lists have already been installed.
         \n\t\t b. Bug fixes:
                   - Bugs that prevented LXDE desktop environment from being listed on the uninstallation list.
-                  - Bugs that prevented automation of the uninstall all option to run continuously without single desktop manual purge confirmations." &>> $logFileName # Log without showing on terminal
+                  - Bugs that prevented automation of the uninstall all option to run continuously without single desktop manual purge confirmations." &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.5:" &>> $logFileName # Log without showing on terminal
+    dksay "GREEN"   "\n Version 3.5:" &>> $logFileName # Log without displaying on terminal
     dksay "NC" "
         \n\t\t a. Changed name from debian-desktop-environment-manager-cli.sh to linux-desktop-environment-toolkit-cli.sh
-        \n\t\t b. Minor refractoring." &>> $logFileName # Log without showing on terminal
+        \n\t\t b. Minor refractoring." &>> $logFileName # Log without displaying on terminal
     sleep 1s # Hold for user to read
 
     dksay "GREEN" "\n ChangeLogs logging completed."
@@ -499,7 +499,7 @@ function exitScript(){
 
             ${clear} # Clear terminal
             cPrint "YELLOW" "Updating logs"
-            logChangeLogs # Log ChangeLogs without showing on terminal
+            logChangeLogs # Log ChangeLogs without displaying on terminal
 
             cd ~ || exit # Change to home directory
             cPrint "YELLOW" "You can find this scripts\' logs in \e[1;31m$(pwd)\e[0m named $logFileName"
@@ -507,7 +507,7 @@ function exitScript(){
             holdTerminal 6 # Hold for user to read
         fi
         ${clear} # Clear terminal
-        echo ""; showScriptInfo # Show script information
+        echo ""; displayScriptInfo # Display script information
 
         # Get script execution time
         endTime=`date +%s` # Get start time
@@ -701,10 +701,10 @@ function getAllInstalledDesktopEnvironments(){
     listOfInstalledDesktopEnvironments="${listOfInstalledDesktopEnvironments} \n"
     if [ "$noOfInstalledDesktopEnvironments" -gt 0 ]
     then # 1 or more desktop environment installed
-        if [ "$1" == '--showList' ]
+        if [ "$1" == '--displayList' ]
         then
             cPrint "GREEN" "Found a total of $noOfInstalledDesktopEnvironments installed desktop environments." |& tee -a $logFileName
-            # Show list of installed desktop environments
+            # Display list of installed desktop environments
             cPrint "YELLOW" "$listOfInstalledDesktopEnvironments"  |& tee -a $logFileName
             holdTerminal 2 # Hold for user to read
         fi
@@ -2559,7 +2559,7 @@ function uninstallAllDesktopEnvironments(){
         fi
     done
 
-    getAllInstalledDesktopEnvironments --showList
+    getAllInstalledDesktopEnvironments --displayList
     if [ "$noOfInstalledDesktopEnvironments" -eq 0 ]
     then
         cPrint "YELLOW" "Finished uninstalling all desktop environments." |& tee -a $logFileName
@@ -2584,8 +2584,8 @@ function displayUninstallationOptions(){
 
         if [ "$noOfInstalledDesktopEnvironments" -gt 0 ]
         then # 1 or more desktop environment installed
-            # Get all installed desktop environments and show them
-            getAllInstalledDesktopEnvironments --showList
+            # Get all installed desktop environments and display them
+            getAllInstalledDesktopEnvironments --displayList
 
             cPrint "YELLOW" "Please select a desktop environment to uninstall from the list above!" |& tee -a $logFileName
             read -p ' option: ' choice
@@ -2838,7 +2838,7 @@ function displayUninstallationOptions(){
     done
 }
 
-# Function to show the main script menu
+# Function to display the main script menu
 function displayMainMenu(){
     ${clear} # Clear terminal
 
