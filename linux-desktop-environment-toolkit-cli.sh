@@ -2,7 +2,7 @@
 
 : ' cPrint - Custom function to create a custom coloured print
     |& tee -a $logFileName - append output stream to logs and output to terminal'
-1="" # Empty any parameter passed by user
+1="" # Empty any parameter passed by user during script exercution
 declare -r targetLinux="Debian Linux"
 declare -l -r scriptName="linux-desktop-environment-toolkit-cli" # Script file name (Set to lowers and read-only)
 declare -l -r logFileName="$scriptName-logs.txt" # Script log-file name (Set to lowers and read-only)
