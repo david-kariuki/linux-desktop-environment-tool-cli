@@ -227,73 +227,6 @@ function isConnected(){
     done
 }
 
-# Function to log scripts' changelogs
-function logChangeLogs(){
-    dksay "YELLOW"  "\n\n Logging ChangeLogs." |& tee -a $logFileName # Log while displaying on terminal
-    dksay "RED"     "\n $scriptName ChangeLogs." &>> $logFileName # Log without displaying on terminal
-    dksay "GREEN"   "\n Version 1.0:" &>> $logFileName # Log without displaying on terminal
-    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. GNOME Desktop environment.
-        \n\t\t b. KDE PLASMA Desktop environment.
-        \n\t\t c. XFCE Desktop environment.
-        \n\t\t d. LXDE Desktop environment.
-        \n\t\t e. LXQT Desktop environment.
-        \n\t\t f. CINNAMON Desktop environment.
-        \n\t\t g. MATE Desktop environment. " &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 1.1:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Added function to setup, enable and start desktop environment automatically after installation of a desktop environment\n\t\t    for users who initially, did not have any desktop environment installed."  &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 1.2:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Changed KDE installation from standard installation to full installation.
-        \n\t\t b. Fixed some bugs including one that made installing all desktop environments a problem." &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 2.0:" &>> $logFileName # Log without displaying on terminal
-    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. BUDGIE Desktop environment.
-        \n\t\t b. ENLIGHTENMENT Desktop environment." &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.0:" &>> $logFileName # Log without displaying on terminal
-    dksay "YELLOW"  "\n\t 1. Added options to install:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. KODI Desktop environment."&>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.1:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Added feature to install X Window Server.
-        \n\t\t b. Logs feature bug fixes.
-        \n\t\t c. Changed name from debian-install-desktop-environment-cli.sh to debian-desktop-environment-manager-cli.sh " &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.2:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Added feature to install missing desktop environments base packages and some extras." &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.3:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Added feature to uninstall existing desktop environments.
-        \n\t\t b. Bug fixes that caused the script to run upgrades and updates when the script was canceled. " &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.4:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Added feature to indicate if the desktop environments on the installation lists have already been installed.
-        \n\t\t b. Bug fixes:
-                  - Bugs that prevented LXDE desktop environment from being listed on the uninstallation list.
-                  - Bugs that prevented automation of the uninstall all option to run continuously without single desktop manual purge confirmations." &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-    dksay "GREEN"   "\n Version 3.5:" &>> $logFileName # Log without displaying on terminal
-    dksay "NC" "
-        \n\t\t a. Changed name from debian-desktop-environment-manager-cli.sh to linux-desktop-environment-toolkit-cli.sh
-        \n\t\t b. Minor refractoring." &>> $logFileName # Log without displaying on terminal
-    sleep 1s # Hold for user to read
-
-    dksay "GREEN" "\n ChangeLogs logging completed."
-    sectionBreak
-}
-
 # Function to check for script action
 function checkForScriptAction(){
     : '
@@ -498,8 +431,6 @@ function exitScript(){
             checkDebugAndRollback --debug --update-upgrade
 
             ${clear} # Clear terminal
-            cPrint "YELLOW" "Updating logs"
-            logChangeLogs # Log ChangeLogs without displaying on terminal
 
             cd ~ || exit # Change to home directory
             cPrint "YELLOW" "You can find this scripts\' logs in \e[1;31m$(pwd)\e[0m named $logFileName"
