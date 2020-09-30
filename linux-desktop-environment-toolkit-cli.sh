@@ -162,7 +162,7 @@ function initScript(){
 
   echo ""; cPrint "RED" "Hello $USER!!." |& tee -a $logFileName
   cPrint "YELLOW"	"This script will help you install and uninstall the supported $targetLinux desktop environments." |& tee -a $logFileName
-  holdTerminal 7 # Hold for user to read
+  holdTerminal 6 # Hold for user to read
 
   # Check if user is running as root
   checkIfUserIsRoot
@@ -177,7 +177,7 @@ function checkIfUserIsRoot(){
     if [ "$user" != 'root' ]
     then
         cPrint "RED" "This script works fully when run as root.\n Please run it as root to avoid issues/errors.\n" |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         exitScript --end
     fi
 }
@@ -254,7 +254,7 @@ function updateAndUpgrade(){
     then # Checking for internet connection
         # Internet connection established
         cPrint "YELLOW" "Updating system packages." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
         apt-get update |& tee -a $logFileName
 
         # Add script actions to script actions array
@@ -275,7 +275,7 @@ function updateAndUpgrade(){
     then # Checking for internet connection
         # Internet connection established
         cPrint "YELLOW" "Upgrading software packages." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
         apt-get upgrade -y |& tee -a $logFileName
 
         # Add script actions to script actions array
@@ -296,7 +296,7 @@ function updateAndUpgrade(){
     then # Checking for internet connection
         # Internet connection established
         cPrint "YELLOW" "Running dist upgrade." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
         apt-get dist-upgrade -y |& tee -a $logFileName
 
         # Add script actions to script actions array
@@ -317,7 +317,7 @@ function updateAndUpgrade(){
     then # Checking for internet connection
         # Internet connection established
         cPrint "YELLOW" "Running full upgrade." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
         apt-get full-upgrade -y |& tee -a $logFileName
 
         # Add script actions to script actions array
@@ -338,15 +338,15 @@ function updateAndUpgrade(){
     then # Checking for internet connection
         # Internet connection established
         cPrint "YELLOW" "Installing apt-file for apt-file updates." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
         apt-get install apt-file -y |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
         sectionBreak
 
         cPrint "YELLOW" "Running apt-file update." |& tee -a $logFileName
-        holdTerminal 3
+        holdTerminal 2
         apt-file update |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         # Add script actions to script actions array
         scriptActions=( "${scriptActions[@]}" "apt-file-update" )
@@ -373,26 +373,26 @@ function checkDebugAndRollback(){
     then # Check for network switch
         cPrint "GREEN" "Debugging and rolling back some changes due to network interrupt. Please wait..." |& tee -a $logFileName
     fi
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
 
     cPrint "YELLOW"  "Checking for broken/unmet dependencies and fixing broken installs." |& tee -a $logFileName
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
     apt-get check |& tee -a $logFileName
     apt-get --fix-broken install |& tee -a $logFileName
     sectionBreak
 
     cPrint "YELLOW" "Cleaning apt-get cache, disk space and removing unused packages." |& tee -a $logFileName
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
     apt-get autoclean -y |& tee -a $logFileName
     apt-get clean -y |& tee -a $logFileName
     apt-get autoremove -y |& tee -a $logFileName
     sectionBreak
 
     cPrint "YELLOW" "Configuring packages." |& tee -a $logFileName
-    holdTerminal 2 # Hold for user to read
+    holdTerminal 1 # Hold for user to read
     dpkg --configure -a |& tee -a $logFileName
     cPrint "NC" "dpkg package configuration completed." |& tee -a $logFileName
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
     sectionBreak
 
     if [[ "$2" == '--update-upgrade' && "$1" == '--debug' ]]
@@ -402,7 +402,7 @@ function checkDebugAndRollback(){
     fi
 
     cPrint "YELLOW" "Cleaning apt-get cache, disk space and removing unused packages." |& tee -a $logFileName
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
     apt-get autoclean -y |& tee -a $logFileName
     apt-get clean -y |& tee -a $logFileName
     apt-get --fix-broken install |& tee -a $logFileName
@@ -410,7 +410,7 @@ function checkDebugAndRollback(){
     sectionBreak
 
     cPrint "YELLOW" "Updating AppStream cache." |& tee -a $logFileName
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
     appstreamcli refresh --force |& tee -a $logFileName
     sectionBreak
 
@@ -422,7 +422,7 @@ function checkDebugAndRollback(){
 function exitScript(){
   # Display exit message
     cPrint "RED" "Exiting script...." |& tee -a $logFileName
-    holdTerminal 2 # Hold for user to read
+    holdTerminal 1 # Hold for user to read
 
     if [ "$1" == '--end' ]
     then # Check for --end switch
@@ -435,7 +435,7 @@ function exitScript(){
             cd ~ || exit # Change to home directory
             cPrint "YELLOW" "You can find this scripts\' logs in \e[1;31m$(pwd)\e[0m named $logFileName"
             cPrint "GREEN" "\n Type: \e[1;31mcat $scriptName\e[0m to view the logs in terminal"
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
         fi
         ${clear} # Clear terminal
         echo ""; displayScriptInfo # Display script information
@@ -477,7 +477,7 @@ function checkForDefaultDesktopEnvironment(){
     if [ "$1" != '--noResponse' ]
     then
         cPrint "YELLOW" "Checking for default desktop environment.." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
     fi
     if [ "$XDG_CURRENT_DESKTOP" = "" ]
     then # Check for installed  Desktop environments
@@ -492,17 +492,17 @@ function checkForDefaultDesktopEnvironment(){
         if [ -z "$xSessions" ]
         then
             cPrint "GREEN" "No default display manager found!!" |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
         else
             cPrint "GREEN" "No default display manager found!!" |& tee -a $logFileName
             cPrint "GREEN" "The below desktop environment xsession files were found:\n$xSessions"
-            holdTerminal 5 # Hold for user to read
+            holdTerminal 4 # Hold for user to read
         fi
     else
         if [ "$1" != '--noResponse' ]
         then # Display choice
             cPrint "GREEN" "Current default : $currentDesktopEnvironment" |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
         fi
     fi
 }
@@ -637,7 +637,7 @@ function getAllInstalledDesktopEnvironments(){
             cPrint "GREEN" "Found a total of $noOfInstalledDesktopEnvironments installed desktop environments." |& tee -a $logFileName
             # Display list of installed desktop environments
             cPrint "YELLOW" "$listOfInstalledDesktopEnvironments"  |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
         fi
     fi
 }
@@ -646,7 +646,7 @@ function getAllInstalledDesktopEnvironments(){
 # that one desktop environment
 function checkSetDefaultDesktopEnvironment(){
     cPrint "YELLOW" "Checking for the default desktop environment." |& tee -a $logFileName
-    holdTerminal 2 # Hold for user to read
+    holdTerminal 1 # Hold for user to read
     # Display set default desktop environment
     cat /etc/X11/default-display-manager |& tee -a $logFileName
 }
@@ -697,17 +697,17 @@ function installXWindowServer(){
         then # To display below message only once during runtime
             cPrint "GREEN" "Checked for XServer installation.\n ...XServer is already installed."
             XServerInstalled=1 # Set X Server installed to true.
-            holdTerminal 4 # Hold for user to read
+            holdTerminal 3 # Hold for user to read
         fi
     else # XServer not found
         # Checking for internet connection before continuing
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing XORG. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             # Install X window Server
             apt-get install xorg -y |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
             # Add script actions to script actions array
             scriptActions=( "${scriptActions[@]}" "install-xorg" )
             sectionBreak
@@ -729,47 +729,47 @@ function installGNOMEDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing GNOME. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
             # Install full GNOME with confirmation
                 apt-get install gnome -y |& tee -a $logFileName
                 apt-get install task-gnome-desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else # Install full GNOME without confirmation
                 apt-get install gnome task-gnome-desktop |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
             scriptActions=( "${scriptActions[@]}" "install-desktop-gnome" )
             cPrint "YELLOW" "\n\n Installing alacarte menu editor for GNOME." |& tee -a $logFileName
-            holdTerminal 5 # Hold for user to read
+            holdTerminal 4 # Hold for user to read
 
             # Install alacarte
             apt-get install alacarte |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             # Add script actions to script actions array
             scriptActions=( "${scriptActions[@]}" "install-alacarte" )
 
             cPrint "GREEN" "GNOME installation complete." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             cPrint "YELLOW" "Checking if gdm3 is installed. If not it will be installed." |& tee -a $logFileName
-            holdTerminal 5 # Hold for user to read
+            holdTerminal 4 # Hold for user to read
 
             # Install gdm3 if id does not exist
             apt-get install gdm3 |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             # Check for GNOME setDefault switch
             if [ "$2" == '--setDefault' ]
             then
                 cPrint "YELLOW" "Setting GNOME as default desktop environment." |& tee -a $logFileName
-                holdTerminal 5 # Hold for user to read
+                holdTerminal 4 # Hold for user to read
                 cPrint "YELLOW" "Please select gdm3 when prompted." |& tee -a $logFileName
-                holdTerminal 5 # Hold for user to read
+                holdTerminal 4 # Hold for user to read
                 dpkg-reconfigure gdm3 |& tee -a $logFileName
 
                 # Check for set default desktop environment
@@ -788,7 +788,7 @@ function installGNOMEDesktop(){
                         || "$dfChoice" == '1' ]]
                     then # Option : Yes
                         cPrint "YELLOW" "Setting GNOME as default desktop environment." |& tee -a $logFileName
-                        holdTerminal 5 # Hold for user to read
+                        holdTerminal 4 # Hold for user to read
                         dpkg-reconfigure gdm3 |& tee -a $logFileName
                         # Check for set default desktop environment
                         checkSetDefaultDesktopEnvironment
@@ -816,7 +816,7 @@ function installGNOMEDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "GNOME desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -833,18 +833,18 @@ function installKDEPlasmaDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing KDE PLASMA Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
             # Install KDE PLASMA Desktop without confirmation
                 apt-get install kde-full -y |& tee -a $logFileName
                 apt-get install task-kde-desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install KDE PLASMA Desktop with confirmation
                 apt-get install kde-full |& tee -a $logFileName
                 apt-get install task-kde-desktop |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -863,7 +863,7 @@ function installKDEPlasmaDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "KDE PLASMA desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -880,20 +880,20 @@ function installXFCEDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing XFCE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install XFCE4 Desktop with confirmation
                 apt-get install xfce4 -y |& tee -a $logFileName
                 apt-get install task-xfce-desktop -y |& tee -a $logFileName
                 apt-get install xfce.desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install XFCE4 Desktop without confirmation
                 apt-get install xfce4 -y |& tee -a $logFileName
                 apt-get install task-xfce-desktop |& tee -a $logFileName
                 apt-get install xfce.desktop |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -912,7 +912,7 @@ function installXFCEDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "XFCE desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -929,19 +929,19 @@ function installLXDEDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing LXDE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install LXDE Desktop environment with confirmation
                 apt-get install lxde -y |& tee -a $logFileName
                 apt-get install task-lxde-desktop -y |& tee -a $logFileName
                 apt-get install lxde.desktop lxdm -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install LXDE Desktop environment without confirmation
                 apt-get install lxde task-lxde-desktop -y |& tee -a $logFileName
                 apt-get install lxde.desktop lxdm |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -960,7 +960,7 @@ function installLXDEDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "LXDE desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -977,20 +977,20 @@ function installLXQTDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing LXQT Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install LXQT Desktop environment with confirmation
                 apt-get install lxqt sddm -y |& tee -a $logFileName
                 apt-get install task-lxqt-desktop -y |& tee -a $logFileName
                 apt-get install lxqt.desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install LXQT Desktop environment without confirmation
                 apt-get install lxqt sddm |& tee -a $logFileName
                 apt-get install task-lxqt-desktop |& tee -a $logFileName
                 apt-get install lxqt.desktop |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1009,7 +1009,7 @@ function installLXQTDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "LXQT desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -1026,18 +1026,18 @@ function installCinnamonDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing CINNAMON Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install ENLIGHTENMENT Desktop environment with confirmation
                 apt-get install cinnamon-desktop-environment -y |& tee -a $logFileName
                 apt-get install task-cinnamon-desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install ENLIGHTENMENT Desktop environment without confirmation
                 apt-get install cinnamon-desktop-environment |& tee -a $logFileName
                 apt-get install task-cinnamon-desktop |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1056,7 +1056,7 @@ function installCinnamonDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "CINNAMON desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -1073,32 +1073,32 @@ function installMateDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing MATE Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install MATE Desktop environment with confirmation
                 apt-get install mate-desktop-environment -y |& tee -a $logFileName
                 apt-get install task-mate-desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
 
                 cPrint "YELLOW" "\n\n Installing MATE Extras..." |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
 
                 # Install MATE Desktop environment Extras
                 apt-get install mate-desktop-environment-extras -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
               # Install MATE Desktop environment without confirmation
               apt-get install mate-desktop-environment |& tee -a $logFileName
               apt-get install task-mate-desktop |& tee -a $logFileName
-              holdTerminal 3 # Hold for user to read
+              holdTerminal 2 # Hold for user to read
 
               cPrint "YELLOW" "\n\n Installing MATE Extras..." |& tee -a $logFileName
-              holdTerminal 3 # Hold for user to read
+              holdTerminal 2 # Hold for user to read
 
               # Install MATE Desktop environment Extras
               apt-get install mate-desktop-environment-extras |& tee -a $logFileName
-              holdTerminal 3 # Hold for user to read
+              holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1117,7 +1117,7 @@ function installMateDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "MATE  desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -1134,26 +1134,26 @@ function installBudgieDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing BUDGIE Desktop. This will install GNOME as a dependencys on it.\n This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 8 # Hold for user to read
+            holdTerminal 6 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install BUDGIE Desktop environment with confirmation
                 apt-get install budgie-desktop -y |& tee -a $logFileName
                 apt-get install budgie-indicator-applet -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
 
                 # Install BUDGIE Desktop environment with confirmation
                 apt-get install budgie.desktop -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
               # Install BUDGIE Desktop environment without confirmation
               apt-get install budgie-desktop |& tee -a $logFileName
               apt-get install budgie-indicator-applet |& tee -a $logFileName
-              holdTerminal 3 # Hold for user to read
+              holdTerminal 2 # Hold for user to read
 
               # Install BUDGIE Desktop environment without confirmation
               apt-get install budgie.desktop |& tee -a $logFileName
-              holdTerminal 3 # Hold for user to read
+              holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1172,7 +1172,7 @@ function installBudgieDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "BUDGIE  desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -1189,27 +1189,27 @@ function installEnlightenmentDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing ENLIGHTENMENT Desktop dependencies." |& tee -a $logFileName
-            holdTerminal 4 # Hold for user to read
+            holdTerminal 3 # Hold for user to read
             apt-get install gcc g++ check libssl-dev -y |& tee -a $logFileName
             apt-get install libsystemd-dev libjpeg-dev -y |& tee -a $logFileName
             apt-get install libglib2.0-dev -y |& tee -a $logFileName
             apt-get install libgstreamer1.0-dev -y |& tee -a $logFileName
             apt-get install libluajit-5.1-dev -y |& tee -a $logFileName
             apt-get install libfreetype6-dev -y |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             apt-get install libfontconfig1-dev -y |& tee -a $logFileName
             apt-get install libfribidi-dev libx11-dev -y |& tee -a $logFileName
             apt-get install libxext-dev libxrender-dev -y |& tee -a $logFileName
             apt-get install libgl1-mesa-dev libgif-dev -y |& tee -a $logFileName
             apt-get install libtiff5-dev libpoppler-dev -y |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             apt-get install libpoppler-cpp-dev -y |& tee -a $logFileName
             libspectre-dev libraw-dev librsvg2-dev -y |& tee -a $logFileName
             libudev-dev libmount-dev libdbus-1-dev -y |& tee -a $logFileName
             libpulse-dev libsndfile1-dev -y |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             apt-get install libxcursor-dev -y |& tee -a $logFileName
             apt-get install libxcomposite-dev -y |& tee -a $logFileName
@@ -1219,19 +1219,19 @@ function installEnlightenmentDesktop(){
             apt-get install libbullet-dev -y |& tee -a $logFileName
             apt-get install libgstreamer-plugins-base1.0-dev -y |& tee -a $logFileName
             apt-get install doxygen git -y |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             printf "\n"; cPrint "YELLOW" "Installing ENLIGHTENMENT Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install ENLIGHTENMENT Desktop environment with confirmation
                 apt-get install enlightenment -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install ENLIGHTENMENT Desktop environment without confirmation
                 apt-get install enlightenment |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1250,7 +1250,7 @@ function installEnlightenmentDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "ENLIGHTENMENT  desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -1267,16 +1267,16 @@ function installKodiDesktop(){
         if isConnected
         then # Internet connection Established
             cPrint "YELLOW" "Installing KODI Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
-            holdTerminal 6 # Hold for user to read
+            holdTerminal 5 # Hold for user to read
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install KODI Desktop environment with confirmation
                 apt-get install kodi -y |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             else
                 # Install KODI Desktop environment without confirmation
                 apt-get install kodi |& tee -a $logFileName
-                holdTerminal 3 # Hold for user to read
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1295,7 +1295,7 @@ function installKodiDesktop(){
     else
         ${clear} # Clear terminal
         cPrint "GREEN" "KODI  desktop is already installed." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
         sectionBreak
     fi
 }
@@ -1304,7 +1304,7 @@ function installKodiDesktop(){
 function installAllDesktopEnvironments(){
     # Install all desktop environments
     cPrint "PURPLE" "\n\n Installing all $numberOfDesktopEnvironments desktop environments. This may take time depending on your internet connection. Please wait!\n"
-    holdTerminal 5 # Hold for user to read
+    holdTerminal 4 # Hold for user to read
     installKDEPlasmaDesktop --y # Install KDE PLASMA Desktop
     installXFCEDesktop --y # Install XFCE Desktop
     installLXDEDesktop --y # Install LXDE Desktop
@@ -1328,7 +1328,7 @@ function installAllDesktopEnvironments(){
 
         ${clear} # Clear terminal
         cPrint "YELLOW" "All $numberOfDesktopEnvironments desktop environments have been installed." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
         break 2 # Break from nested loops
 
     else getAllInstalledDesktopEnvironments # Get all installed desktop environments
@@ -1342,7 +1342,7 @@ function installAllDesktopEnvironments(){
         then # All desktop environment already pre-installed
             ${clear} # Clear terminal
             cPrint "YELLOW" "All $numberOfDesktopEnvironments desktop environments have been installed." |& tee -a $logFileName
-            holdTerminal 5 # Hold for user to read
+            holdTerminal 4 # Hold for user to read
         fi
     fi
 }
@@ -1369,7 +1369,7 @@ function displayInstallationOptions(){
         if [ "$reEnteredChoice" == 'false' ]
         then
             cPrint "YELLOW" "Please select the desktop environment to install from the options below." |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
             if [ "$foundGNOMEInstalled" -eq 1 ]
             then # Indicate if desktop environment is already installed
               alreadyInstalled="$alreadyInstalledLabel"
@@ -1652,7 +1652,7 @@ function displayInstallationOptions(){
         || "$choice" == 'cancel' || "$choice" == 'exit' ]]
         then
             cPrint "RED" "Installation cancelled!\n" |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
             ${clear} # Clear terminal
             break # Break from loop
         else
@@ -1677,7 +1677,7 @@ function initSetupDesktopEnvironments(){
     then
         # Setting systemd to boot into graphical.target instead of multi-user.target
         cPrint "GREEN" "Setting systemd to boot to graphicat.target instead of multi-user.target." |& tee -a $logFileName
-        holdTerminal 2 # Hold for user to read
+        holdTerminal 1 # Hold for user to read
 
         # Start / restart gdm3
         systemctl set-default graphical.target |& tee -a $logFileName
@@ -1691,12 +1691,12 @@ function initSetupDesktopEnvironments(){
         if [ "$justInstalledAllEnvironments" -eq 1 ]
         then # GNOME is default
             cPrint "YELLOW" "Running --replace GNOME Desktop and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
 
             # --replace and disown to break HUP signal for all jobs if exists
             gnome-shell --replace & disown &>> $logFileName
             cPrint "YELLOW" "Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Start / restart gdm3 for GNOME Desktop
             systemctl restart gdm3 |& tee -a $logFileName
@@ -1710,12 +1710,12 @@ function initSetupDesktopEnvironments(){
             && "$justInstalledAllEnvironments" -eq 0 ]]
         then
             cPrint "YELLOW" "Running --replace GNOME Desktop and disown." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # --replace and disown to break HUP signal for all jobs if exists
             gnome-shell --replace & disown &>> $logFileName
             cPrint "YELLOW" "Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Start / restart gdm3 for GNOME Desktop
             systemctl restart gdm3 |& tee -a $logFileName
@@ -1735,7 +1735,7 @@ function initSetupDesktopEnvironments(){
             dpkg-reconfigure sddm |& tee -a $logFileName
             cPrint "YELLOW" "Restarting sddm for KDE PLASMA Desktop." |& tee -a $logFileName
             systemctl restart sddm |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
         # Only if XFCE Desktop Installed
         elif [[ "$justInstalledKDEPLASMA" -eq 0 && "$justInstalledXFCE" -eq 1
@@ -1746,19 +1746,19 @@ function initSetupDesktopEnvironments(){
             && "$justInstalledAllEnvironments" -eq 0 ]]
         then
             cPrint "YELLOW" "Restarting lightdm for XFCE Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
             cPrint "YELLOW" "Re-configuring lightdm for XFCE Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Re-configure lightdm to load after boot
             dpkg-reconfigure lightdm |& tee -a $logFileName
             cPrint "YELLOW" "Creating a symlink to the unit file in /lib/systemd/system in /etc/systemd/system for lightdm to start at boot." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             `ll /etc/systemd/system/display-manager.service` |& tee -a $logFileName
             `ln -s /lib/systemd/system/lightdm.service /etc/systemd/system/display-manager.service` |& tee -a $logFileName
             cPrint "YELLOW" "Restarting lightdm and resetting it for XFCE Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Restart lightdm for XFCE Desktop and reset
             systemctl restart lightdm || xfwm4 --replace |& tee -a $logFileName
@@ -1774,13 +1774,13 @@ function initSetupDesktopEnvironments(){
             if [ "$justInstalledLXDE" -eq 1 ]
             then
                 cPrint "YELLOW" "Restarting LXDE." |& tee -a $logFileName
-                holdTerminal 2 # Hold for user to read
+                holdTerminal 1 # Hold for user to read
                 # Start LXDE Desktop from terminal
                 exec startlxde |& tee -a $logFileName
             elif [ "$justInstalledLXQT" -eq 1 ]
             then
                 cPrint "YELLOW" "Restarting LXQT." |& tee -a $logFileName
-                holdTerminal 2 # Hold for user to read
+                holdTerminal 1 # Hold for user to read
                 # Start LXQT Desktop from terminal
                 exec startlxqt |& tee -a $logFileName
             fi
@@ -1795,18 +1795,18 @@ function initSetupDesktopEnvironments(){
             # Kill all instances of CINNAMON Desktop if exists
             killall cinnamon |& tee -a $logFileName
             cPrint "YELLOW" "Re-configuring CINNAMON Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Re-configure CINNAMON Desktop
             dpkg-reconfigure cinnamon |& tee -a $logFileName
             cPrint "YELLOW" "Running --replace for CINNAMON Desktop and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Replace CINNAMON Desktop and disown to break HUP signal for all
             # jobs if exists
             cinnamon --replace && disown &>> $logFileName
             cPrint "YELLOW" "Restarting mdm for CINNAMON Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Restart mdm for CINNAMON Desktop
             service restart mdm |& tee -a $logFileName
@@ -1822,12 +1822,12 @@ function initSetupDesktopEnvironments(){
             # Kill all instances of MATE-PANEL if exists
             killall mate-panel |& tee -a $logFileName
             cPrint "YELLOW" "Re-configuring MATE-PANEL." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Re-configure CINNAMON Desktop
             dpkg-reconfigure mate-panel |& tee -a $logFileName
             cPrint "YELLOW" "Running --replace for MATE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Replace MATE-PANEL and disown to break HUP signal for all jobs if exists
             mate-panel --replace && disown &>> $logFileName
@@ -1843,12 +1843,12 @@ function initSetupDesktopEnvironments(){
             # Kill all instances of BUDGIE-PANEL if exists
             killall budgie-panel |& tee -a $logFileName
             cPrint "YELLOW" "Re-configuring BUDGIE-DESKTOP." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Re-configure BUDGIE Desktop
             dpkg-reconfigure budgie-desktop |& tee -a $logFileName
             cPrint "YELLOW" "Running --replace for BUDGIE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Replace BUDGIE-PANEL and disown to break HUP signal for all jobs
             # if exists
@@ -1865,12 +1865,12 @@ function initSetupDesktopEnvironments(){
             # Kill all instances of ENLIGHTENMENT Desktop if exists
             killall enlightenment & tee -a $logFileName
             cPrint "YELLOW" "Re-configuring ENLIGHTENMENT Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Re-configure ENLIGHTENMENT Desktop Desktop
             dpkg-reconfigure enlightenment |& tee -a $logFileName
             cPrint "YELLOW" "Starting ENLIGHTENMENT Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             enlightenment_start # Start ENLIGHTENMENT Desktop
 
@@ -1885,12 +1885,12 @@ function initSetupDesktopEnvironments(){
             # Kill all instances of KODI Desktop if exists
             killall kodi & tee -a $logFileName
             cPrint "YELLOW" "Re-configuring KODI Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
 
             # Re-configure KODI Desktop Desktop
             dpkg-reconfigure kodi |& tee -a $logFileName
             cPrint "YELLOW" "Starting KODI Desktop." |& tee -a $logFileName
-            holdTerminal 2 # Hold for user to read
+            holdTerminal 1 # Hold for user to read
             kodi # Start kodi Desktop
         fi
     fi
@@ -1955,7 +1955,7 @@ function queryPurgeDesktopEnvironment(){
 # Function to clean up after uninstallation
 function cleanUpAfterUninstallation(){
     cPrint "YELLOW" "\n\n Removing unused packages and cleaning up..." |& tee -a $logFileName
-    holdTerminal 3 # Hold for user to read
+    holdTerminal 2 # Hold for user to read
     apt-get -f install |& tee -a $logFileName
     apt-get autoremove -y |& tee -a $logFileName
     apt-get clean |& tee -a $logFileName
@@ -2008,7 +2008,7 @@ function uninstallGnomeDesktop(){
     if ! queryPurgeDesktopEnvironment "GNOME"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling GNOME. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get remove gnome.desktop -y |& tee -a $logFileName
         apt-get remove gnome-classic.desktop -y |& tee -a $logFileName
@@ -2016,7 +2016,7 @@ function uninstallGnomeDesktop(){
         apt-get remove gnome-flashback-metacity.desktop -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling GNOME and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 4 # Hold for user to read
+        holdTerminal 3 # Hold for user to read
 
         # Remove all files and packages includding XSessions
         apt-get purge --autoremove gnome.desktop -y |& tee -a $logFileName
@@ -2047,13 +2047,13 @@ function uninstallKdeDesktop(){
     if ! queryPurgeDesktopEnvironment "KDE PLASMA"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling KDE PLASMA. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove kde-full kde-plasma-desktop -y |& tee -a $logFileName
         apt-get remove plasma.desktop -y |& tee -a $logFileName
     else # Purge
       cPrint "YELLOW" "\n\n Uninstalling KDE PLASMA and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-      holdTerminal 5 # Hold for user to read
+      holdTerminal 4 # Hold for user to read
 
       apt-get purge --autoremove kde-full -y |& tee -a $logFileName
       apt-get purge --autoremove kde-plasma-desktop -y |& tee -a $logFileName
@@ -2082,7 +2082,7 @@ function uninstallXfceDesktop(){
     if ! queryPurgeDesktopEnvironment "XFCE"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling XFCE. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove xfce.desktop xfce4 -y |& tee -a $logFileName
         apt-get remove task-xfce-desktop -y |& tee -a $logFileName
@@ -2092,7 +2092,7 @@ function uninstallXfceDesktop(){
         apt-get remove xfce4-terminal thunar -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling XFCE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove xfce4 -y |& tee -a $logFileName
         apt-get purge --autoremove xfce.desktop -y |& tee -a $logFileName
@@ -2129,13 +2129,13 @@ function uninstallLxdeDesktop(){
     if ! queryPurgeDesktopEnvironment "LXDE"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling LXDE. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove lxde task-lxde-desktop -y |& tee -a $logFileName
         apt-get remove LXDE.desktop -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling LXDE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove lxde |& tee -a $logFileName
         apt-get purge --autoremove task-lxde-desktop -y |& tee -a $logFileName
@@ -2164,13 +2164,13 @@ function uninstallLxqtDesktop(){
     if ! queryPurgeDesktopEnvironment "LXQT"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling LXQT. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove lxqt lxqt.desktop -y |& tee -a $logFileName
         apt-get remove task-lxqt.desktop -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling LXQT and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove lxqt lxqt.desktop -y |& tee -a $logFileName
         apt-get purge --autoremove task-lxqt.desktop -y |& tee -a $logFileName
@@ -2198,14 +2198,14 @@ function uninstallCinnamonDesktop(){
     if ! queryPurgeDesktopEnvironment "CINNAMON"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling CINNAMON. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove cinnamon-desktop-environment -y |& tee -a $logFileName
         apt-get remove task-cinnamon-desktop -y |& tee -a $logFileName
         apt-get remove cinnamon.desktop -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling CINNAMON and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove cinnamon-desktop-environment -y |& tee -a $logFileName
         apt-get purge --autoremove task-cinnamon-desktop -y |& tee -a $logFileName
@@ -2234,13 +2234,13 @@ function uninstallMateDesktop(){
     if ! queryPurgeDesktopEnvironment "MATE"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling MATE. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove mate-desktop-environment -y |& tee -a $logFileName
         apt-get remove task-mate-desktop mate.desktop -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling MATE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove mate-desktop-environment -y |& tee -a $logFileName
         apt-get purge --autoremove task-mate-desktop -y |& tee -a $logFileName
@@ -2269,13 +2269,13 @@ function uninstallBudgieDesktop(){
     if ! queryPurgeDesktopEnvironment "BUDGIE"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling BUDGIE. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove budgie-desktop -y |& tee -a $logFileName
         budgie.desktop -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling BUDGIE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove budgie-desktop -y |& tee -a $logFileName
         apt-get purge --autoremove budgie.desktop -y |& tee -a $logFileName
@@ -2303,12 +2303,12 @@ function uninstallEnlightenmentDesktop(){
     if ! queryPurgeDesktopEnvironment "ENLIGHTENMENT"
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling ENLIGHTENMENT. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove enlightenment -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling ENLIGHTENMENT and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove enlightenment -y |& tee -a $logFileName
         apt-get purge --autoremove enlightenment* -y |& tee -a $logFileName
@@ -2335,12 +2335,12 @@ function uninstallKodiDesktop(){
     if ! queryPurgeDesktopEnvironment "KODI";\
     then # Remove
         cPrint "YELLOW" "\n\n Uninstalling KODI. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
 
         apt-get remove kodi -y |& tee -a $logFileName
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling KODI and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
-        holdTerminal 5 # Hold for user to read
+        holdTerminal 4 # Hold for user to read
 
         apt-get purge --autoremove kodi -y |& tee -a $logFileName
         apt-get purge --autoremove kodi* -y |& tee -a $logFileName
@@ -2494,7 +2494,7 @@ function uninstallAllDesktopEnvironments(){
     if [ "$noOfInstalledDesktopEnvironments" -eq 0 ]
     then
         cPrint "YELLOW" "Finished uninstalling all desktop environments." |& tee -a $logFileName
-        holdTerminal 3 # Hold for user to read
+        holdTerminal 2 # Hold for user to read
     fi
 }
 
@@ -2755,7 +2755,7 @@ function displayUninstallationOptions(){
             elif  [[ "$choice" == 'cancel' ]]
             then
                 cPrint "RED" "\n\n Uninstallation cancelled!\n" |& tee -a $logFileName
-                holdTerminal 2 # Hold for user to read
+                holdTerminal 1 # Hold for user to read
                 ${clear} # Clear terminal
                 break # Break from loop - Uninstallation cancelled
             else cPrint "GREEN" "Invalid desktop selection!! Please try again." |& tee -a $logFileName # Invalid entry
@@ -2763,7 +2763,7 @@ function displayUninstallationOptions(){
             sleep 1 # Hold loop
         else
             cPrint "RED" "\n\n You have not installed any desktop environment.\n"
-            holdTerminal 3 # Hold for user to read
+            holdTerminal 2 # Hold for user to read
             break
         fi
     done
