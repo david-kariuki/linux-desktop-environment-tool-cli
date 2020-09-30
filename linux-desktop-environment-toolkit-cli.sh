@@ -1,3 +1,5 @@
+# Copyright (c) 2020 by David Kariuki (dk). All Rights Reserved.
+
 #!/bin/bash
 
 : ' cPrint - Custom function to create a custom coloured print
@@ -111,8 +113,7 @@ function holdTerminal(){
 
 # Function to format time from seconds to days:hours:minutes:seconds
 function formatTime() {
-    local inputSeconds=$1; local minutes=0
-    local hour=0; local day=0
+    local inputSeconds=$1 local minutes=0 hour=0 day=0
     if((inputSeconds>59))
     then
         ((seconds=inputSeconds%60))
@@ -463,7 +464,7 @@ function exitScript(){
       cPrint "RED" "\n\n This script requires a stable internet connection to work fully!!" |& tee -a $logFileName
       cPrint "NC" "Please check your connection settings and re-run the script.\n" |& tee -a $logFileName
 
-      if [ "$2" == '--rollback' ];
+      if [ "$2" == '--rollback' ]
       then # Check for rollback switch
           # Check for and fix any broken installs or unmet dependencies
           checkDebugAndRollback --network
@@ -876,7 +877,7 @@ function installKDEPlasmaDesktop(){
 
 # Function to install XFCE Desktop environment
 function installXFCEDesktop(){
-    if [ "$foundXFCEInstalled" -eq 0 ];
+    if [ "$foundXFCEInstalled" -eq 0 ]
     then # Found
 
         installXWindowServer # Install X Window Server
@@ -1328,7 +1329,7 @@ function installAllDesktopEnvironments(){
         && "$justInstalledLXDE" -eq 1 && "$justInstalledLXQT" -eq 1
         && "$justInstalledCINNAMON" -eq 1 && "$justInstalledMATE" -eq 1
         && "$justInstalledBUDGIE" -eq 1 && "$justInstalledENLIGHTENMENT" -eq 1
-        && "$justInstalledKODI" -eq 1 && "$justInstalledGNOME" -eq 1  ]];
+        && "$justInstalledKODI" -eq 1 && "$justInstalledGNOME" -eq 1  ]]
     then # Just installed all desktop environment
         justInstalledAllEnvironments=1 # Set installed all to true using integer
 
