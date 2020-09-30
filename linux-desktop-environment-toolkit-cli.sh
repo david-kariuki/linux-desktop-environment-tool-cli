@@ -43,7 +43,7 @@ declare -i foundMATEInstalled=0
 declare -i foundBUDGIEInstalled=0
 declare -i foundENLIGHTENMENTInstalled=0
 declare -i foundKODIInstalled=0
-declare -i XServerInstalled=0
+declare -i XServerInstalled=0 checkedForXServer=0
 
 # Total number of installed desktop environment
 declare -i noOfInstalledDesktopEnvironments=0
@@ -694,9 +694,15 @@ function installXWindowServer(){
           || "$check" == *"Xorg X server - core server"* ]]
     then # XServer found
         if [ $XServerInstalled -eq 0 ]
-        then # To display below message only once during runtime
-            cPrint "GREEN" "Checked for XServer installation.\n ...XServer is already installed."
+        then
+            # Prevent message showing many times during loop
+            if [ "$checkedForXServer" -eq 0 ]
+            then
+                # Display below message only once during runtime
+                cPrint "GREEN" "Checked for XServer installation.\n ...XServer is already installed."
+            fi
             XServerInstalled=1 # Set X Server installed to true.
+            checkedForXServer=1
             holdTerminal 3 # Hold for user to read
         fi
     else # XServer not found
