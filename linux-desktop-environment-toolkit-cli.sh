@@ -156,6 +156,11 @@ function initLogFile(){
     printf $currentDate &>> $logFileName
 }
 
+function installLinuxHeaders(){
+    apt-get install linux-headers-$(uname -r)
+
+}
+
 function initScript(){
   initLogFile
   # Install netcat if not installed to be used for connection check
