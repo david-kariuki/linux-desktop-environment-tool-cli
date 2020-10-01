@@ -1,4 +1,6 @@
-# Linux desktop environment toolkit cli
+# linux-desktop-environment-toolkit-cli
+
+\
 **Current version: `Version 3.6`**\
 **This script runs on terminal and works best with Debian and Ubuntu**
 
