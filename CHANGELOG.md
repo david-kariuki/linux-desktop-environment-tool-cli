@@ -1,5 +1,7 @@
-# CHANGELOG
+# CHANGELOG 
+**linux-desktop-environment-tool-cli**
 
+\
 **Changelog from version 1.0 - 3.6**
 
 **Version 1.0:**
