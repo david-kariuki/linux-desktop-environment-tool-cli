@@ -8,7 +8,7 @@
 declare -r targetLinux="Debian Linux"
 declare -l -r scriptName="linux-desktop-environment-toolkit-cli" # Script file name (Set to lowers and read-only)
 declare -l -r logFileName="$scriptName-logs.txt" # Script log-file name (Set to lowers and read-only)
-declare scriptVersion="3.5" # Script version
+declare scriptVersion="3.6" # Script version
 declare -i -r numberOfDesktopEnvironments=10 # Stores total number of desktop environments
 declare -l -r networkTestUrl="www.google.com" # Stores the networkTestUrl (Set to lowers and read-only)
 declare -r numberExpression='^[0-9]+$' # Number expression
