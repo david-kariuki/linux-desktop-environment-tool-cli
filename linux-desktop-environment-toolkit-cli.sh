@@ -46,6 +46,7 @@ declare -i foundBUDGIEInstalled=0
 declare -i foundENLIGHTENMENTInstalled=0
 declare -i foundKODIInstalled=0
 declare -i XServerInstalled=0 checkedForXServer=0
+declare -i checkedForLinuxHeaders=0 linuxHeadersInstalled=0
 
 # Total number of installed desktop environment
 declare -i noOfInstalledDesktopEnvironments=0
@@ -56,6 +57,7 @@ declare -l xSessionsPath=/usr/share/xsessions/ # XSessions path
     may halt the running of this script in gui terminal'
 declare -a uninstallOrder=()
 declare -a scriptActions=() # Stores the actions performed by the script
+
 
 # Function to create a custom coloured print
 function cPrint(){
@@ -156,25 +158,51 @@ function initLogFile(){
     printf $currentDate &>> $logFileName
 }
 
-function installLinuxHeaders(){
-    apt-get install linux-headers-$(uname -r)
+# Function to check for and install linux headers
+function checkInstallLinuxHeaders(){
+    # Path to linux headers
+    headersPath=/usr/src/linux-headers-$(uname -r)
 
+    # Check for linux headers installation
+    if check=$(ls -l $headersPath &> /dev/null)
+    then # Linux headers installed
+
+        # Prevent message showing many times during loop
+        if [ "$checkedForLinuxHeaders" -eq 0 ]
+        then
+            cPrint "GREEN" "Checked for linux headers. Linux headers installed.\n"
+            holdTerminal 1 # Hold
+            checkedForLinuxHeaders=1
+            linuxHeadersInstalled=1
+        fi
+    else # Linux headers not installed
+
+        # Install linux headers
+        cPrint "YELLOW" "Installing linux headers.\n"
+        apt-get install linux-headers-$(uname -r) |& tee -a $logFileName
+
+        checkDebugAndRollback hapa
+    fi
 }
 
+# Function to install netcat and and start script
 function initScript(){
-  initLogFile
-  # Install netcat if not installed to be used for connection check
-  apt-get install netcat &>> $logFileName
+    initLogFile # Create log file
+    # Install netcat if not installed to be used for connection check
+    cPrint "YELLOW" "Fetching required packages. Please wait..."
+    apt-get install netcat &>> $logFileName
 
-  echo ""; cPrint "RED" "Hello $USER!!." |& tee -a $logFileName
-  cPrint "YELLOW"	"This script will help you install and uninstall the supported $targetLinux desktop environments." |& tee -a $logFileName
-  holdTerminal 6 # Hold for user to read
+    ${clear} # Clear terminal
 
-  # Check if user is running as root
-  checkIfUserIsRoot
-  sectionBreak
+    echo ""; cPrint "RED" "Hello $USER!!." |& tee -a $logFileName
+    cPrint "YELLOW" "This script will help you install and uninstall the supported $targetLinux desktop environments." |& tee -a $logFileName
+    holdTerminal 6 # Hold for user to read
 
-  displayScriptInfo # Display Script Information
+    # Check if user is running as root
+    checkIfUserIsRoot
+    sectionBreak
+
+    displayScriptInfo # Display Script Information
 }
 
 # Function to check if user is running as root
@@ -466,14 +494,14 @@ function exitScript(){
         fi
     elif [ "$1" == '--connectionFailure' ]
     then
-      cPrint "RED" "\n\n This script requires a stable internet connection to work fully!!" |& tee -a $logFileName
-      cPrint "NC" "Please check your connection settings and re-run the script.\n" |& tee -a $logFileName
+        cPrint "RED" "\n\n This script requires a stable internet connection to work fully!!" |& tee -a $logFileName
+        cPrint "NC" "Please check your connection settings and re-run the script.\n" |& tee -a $logFileName
 
-      if [ "$2" == '--rollback' ]
-      then # Check for rollback switch
+        if [ "$2" == '--rollback' ]
+        then # Check for rollback switch
           # Check for and fix any broken installs or unmet dependencies
           checkDebugAndRollback --network
-      fi
+        fi
     fi
     exit 0 # Exit script
 }
@@ -731,6 +759,7 @@ function installXWindowServer(){
 
 # Function to install GNOME Desktop environment
 function installGNOMEDesktop(){
+
     if [ "$foundGNOMEInstalled" -eq 0 ]
     then # Found
 
@@ -786,6 +815,7 @@ function installGNOMEDesktop(){
 
                 # Check for set default desktop environment
                 checkSetDefaultDesktopEnvironment
+
             else # Let user decide
                 while true
                 do
@@ -793,6 +823,7 @@ function installGNOMEDesktop(){
                     cPrint "YELLOW" "Would you like to set GNOME as yout default desktop environment?\n\t1. Y (Yes) - to set default.\n\t2. N (No) to cancel or skip." |& tee -a $logFileName
                     read -p ' option: ' dfChoice
                     dfChoice=${dfChoice,,} # Convert to lowercase
+
                     # Display choice
                     cPrint "GREEN" " You chose : $dfChoice" |& tee -a $logFileName
 
@@ -802,6 +833,7 @@ function installGNOMEDesktop(){
                         cPrint "YELLOW" "Setting GNOME as default desktop environment." |& tee -a $logFileName
                         holdTerminal 4 # Hold for user to read
                         dpkg-reconfigure gdm3 |& tee -a $logFileName
+
                         # Check for set default desktop environment
                         checkSetDefaultDesktopEnvironment
                         break # Break from loop
@@ -835,6 +867,7 @@ function installGNOMEDesktop(){
 
 # Function to install KDE PLASMA Desktop environment
 function installKDEPlasmaDesktop(){
+
     if [ "$foundKDEPLASMAInstalled" -eq 0 ]
     then # Found
 
@@ -846,6 +879,7 @@ function installKDEPlasmaDesktop(){
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing KDE PLASMA Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
             holdTerminal 5 # Hold for user to read
+
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
             # Install KDE PLASMA Desktop without confirmation
@@ -882,6 +916,7 @@ function installKDEPlasmaDesktop(){
 
 # Function to install XFCE Desktop environment
 function installXFCEDesktop(){
+
     if [ "$foundXFCEInstalled" -eq 0 ]
     then # Found
 
@@ -931,6 +966,7 @@ function installXFCEDesktop(){
 
 # Function to install LXDE Desktop environment
 function installLXDEDesktop(){
+
     if [ "$foundLXDEInstalled" -eq 0 ]
     then # Found
 
@@ -979,6 +1015,7 @@ function installLXDEDesktop(){
 
 # Function to install LXQT Desktop environment
 function installLXQTDesktop(){
+
     if [ "$foundLXQTInstalled" -eq 0 ]
     then # Found
 
@@ -1028,6 +1065,7 @@ function installLXQTDesktop(){
 
 # Function to install CINNAMON Desktop environment
 function installCinnamonDesktop(){
+
     if [ "$foundCINNAMONInstalled" -eq 0 ]
     then # Found
 
@@ -1039,6 +1077,7 @@ function installCinnamonDesktop(){
         then # Internet connection Established
             cPrint "YELLOW" "\n\n Installing CINNAMON Desktop. This may take a while depending on your internet connection. Please wait..." |& tee -a $logFileName
             holdTerminal 5 # Hold for user to read
+
             if [ "$1" == '--y' ]
             then # Check for yes switch to install without confirmation
                 # Install ENLIGHTENMENT Desktop environment with confirmation
@@ -1075,6 +1114,7 @@ function installCinnamonDesktop(){
 
 # Function to install MATE Desktop environment
 function installMateDesktop(){
+
     if [ "$foundMATEInstalled" -eq 0 ]
     then # Found
 
@@ -1100,17 +1140,17 @@ function installMateDesktop(){
                 apt-get install mate-desktop-environment-extras -y |& tee -a $logFileName
                 holdTerminal 2 # Hold for user to read
             else
-              # Install MATE Desktop environment without confirmation
-              apt-get install mate-desktop-environment |& tee -a $logFileName
-              apt-get install task-mate-desktop |& tee -a $logFileName
-              holdTerminal 2 # Hold for user to read
+                # Install MATE Desktop environment without confirmation
+                apt-get install mate-desktop-environment |& tee -a $logFileName
+                apt-get install task-mate-desktop |& tee -a $logFileName
+                holdTerminal 2 # Hold for user to read
 
-              cPrint "YELLOW" "\n\n Installing MATE Extras..." |& tee -a $logFileName
-              holdTerminal 2 # Hold for user to read
+                cPrint "YELLOW" "\n\n Installing MATE Extras..." |& tee -a $logFileName
+                holdTerminal 2 # Hold for user to read
 
-              # Install MATE Desktop environment Extras
-              apt-get install mate-desktop-environment-extras |& tee -a $logFileName
-              holdTerminal 2 # Hold for user to read
+                # Install MATE Desktop environment Extras
+                apt-get install mate-desktop-environment-extras |& tee -a $logFileName
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1136,6 +1176,7 @@ function installMateDesktop(){
 
 # Function to install BUDGIE Desktop environment
 function installBudgieDesktop(){
+
     if [ "$foundBUDGIEInstalled" -eq 0 ]
     then # Found
 
@@ -1158,14 +1199,14 @@ function installBudgieDesktop(){
                 apt-get install budgie.desktop -y |& tee -a $logFileName
                 holdTerminal 2 # Hold for user to read
             else
-              # Install BUDGIE Desktop environment without confirmation
-              apt-get install budgie-desktop |& tee -a $logFileName
-              apt-get install budgie-indicator-applet |& tee -a $logFileName
-              holdTerminal 2 # Hold for user to read
+                # Install BUDGIE Desktop environment without confirmation
+                apt-get install budgie-desktop |& tee -a $logFileName
+                apt-get install budgie-indicator-applet |& tee -a $logFileName
+                holdTerminal 2 # Hold for user to read
 
-              # Install BUDGIE Desktop environment without confirmation
-              apt-get install budgie.desktop |& tee -a $logFileName
-              holdTerminal 2 # Hold for user to read
+                # Install BUDGIE Desktop environment without confirmation
+                apt-get install budgie.desktop |& tee -a $logFileName
+                holdTerminal 2 # Hold for user to read
             fi
 
             # Add script actions to script actions array
@@ -1191,6 +1232,7 @@ function installBudgieDesktop(){
 
 # Function to install ENLIGHTENMENT Desktop environment
 function installEnlightenmentDesktop(){
+
     if [ "$foundENLIGHTENMENTInstalled" -eq 0 ]
     then # Found
 
@@ -1269,6 +1311,7 @@ function installEnlightenmentDesktop(){
 
 # Function to install KODI Desktop environment
 function installKodiDesktop(){
+
     if [ "$foundKODIInstalled" -eq 0 ]
     then # Found
 
@@ -1326,6 +1369,7 @@ function installAllDesktopEnvironments(){
     installBudgieDesktop --y # Install BUDGIE Desktop
     installEnlightenmentDesktop --y # Install ENLIGHTENMENT Desktop
     installKodiDesktop --y # Install KODI
+
     # Install GNOME Desktop and set it as the default desktop
     installGNOMEDesktop --y --setDefault
 
@@ -1339,6 +1383,7 @@ function installAllDesktopEnvironments(){
         justInstalledAllEnvironments=1 # Set installed all to true using integer
 
         ${clear} # Clear terminal
+
         cPrint "YELLOW" "All $numberOfDesktopEnvironments desktop environments have been installed." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
         break 2 # Break from nested loops
@@ -1380,6 +1425,7 @@ function displayInstallationOptions(){
 
         if [ "$reEnteredChoice" == 'false' ]
         then
+
             cPrint "YELLOW" "Please select the desktop environment to install from the options below." |& tee -a $logFileName
             holdTerminal 2 # Hold for user to read
             if [ "$foundGNOMEInstalled" -eq 1 ]
@@ -1498,18 +1544,26 @@ function displayInstallationOptions(){
         then # Choice is a number
             if (($choice >= 1 && $choice <= $numberOfDesktopEnvironments))
             then # Check if choice is within acceptable option parameters
-                  if [ "$ranDebugForInstalls" -eq 0 ]
-                  then # Prevent running of debug code repeatedly in the loop
-                      ${clear} # Clear terminal
-                      # Debug and configure packages, update system packages,
-                      # upgrade software packages and update apt-file
-                      checkDebugAndRollback --debug --update-upgrade
-                      # Increment ranDebugForInstalls to 1 to set it to true
-                      ranDebugForInstalls=$[ ranDebugForInstalls + 1 ]
-                      ${clear} # Clear terminal
-                  fi
+                if [ "$ranDebugForInstalls" -eq 0 ]
+                then # Prevent running of debug code repeatedly in the loop
+
+                    ${clear} # Clear terminal
+
+                    # Check for and install linnux headers
+                    checkInstallLinuxHeaders
+
+                    # Debug and configure packages, update system packages,
+                    # upgrade software packages and update apt-file
+                    checkDebugAndRollback --debug --update-upgrade
+
+                    # Increment ranDebugForInstalls to 1 to set it to true
+                    ranDebugForInstalls=$[ ranDebugForInstalls + 1 ]
+
+                    ${clear} # Clear terminal
+                fi
             fi
         fi
+
         # Check chosen option
         if  [[ "$choice" == '1' || "$choice" == 'gnome' ]]
         then # Option : GNOME Desktop
@@ -1525,6 +1579,7 @@ function displayInstallationOptions(){
             else
                 installGNOMEDesktop # Install GNOME Desktop
             fi
+
             # Query if user wants to install another desktop environment
             # after installing the previous
             if queryInstallAnotherDesktopEnvironment
@@ -1534,6 +1589,7 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '2' || "$choice" == 'kde'
               || "$choice" == 'kde plasma' || "$choice" == 'kdeplasma' ]]
         then # Option : KDE PLASMA Desktop
@@ -1550,6 +1606,7 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '3' || "$choice" == 'xfce' ]]
         then # Option : XFCE Desktop
             installXFCEDesktop # Install XFCE Desktop
@@ -1563,6 +1620,7 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '4' || "$choice" == 'lxde' ]]
         then # Option : LXDE Desktop
             installLXDEDesktop # Install LXDE Desktop
@@ -1576,33 +1634,36 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
-          elif  [[ "$choice" == '5' || "$choice" == 'lxqt' ]]
-          then # Option : LXQT Desktop
-              installLXQTDesktop # Install LXQT Desktop
 
-              # Query if user wants to install another desktop environment
-              # after installing the previous
-              if queryInstallAnotherDesktopEnvironment
-              then # Installation of another desktop environment - true
-                  sleep 1 # Hold loop
-                  continue # Resume iterations
-              else # Installation of another desktop environment - false
-                  break # Break from loop
-              fi
-          elif  [[ "$choice" == '6' || "$choice" == 'cinnamon'
-          || "$choice" == 'cinamon' ]]
-          then # Option : CINNAMON
-              installCinnamonDesktop # Install CINNAMON Desktop
+        elif  [[ "$choice" == '5' || "$choice" == 'lxqt' ]]
+        then # Option : LXQT Desktop
+            installLXQTDesktop # Install LXQT Desktop
 
-              # Query if user wants to install another desktop environment
-              # after installing the previous
-              if queryInstallAnotherDesktopEnvironment
-              then # Installation of another desktop environment - true
-                  sleep 1 # Hold loop
-                  continue # Resume iterations
-              else # Installation of another desktop environment - false
-                  break # Break from loop
-              fi
+            # Query if user wants to install another desktop environment
+            # after installing the previous
+            if queryInstallAnotherDesktopEnvironment
+            then # Installation of another desktop environment - true
+              sleep 1 # Hold loop
+              continue # Resume iterations
+            else # Installation of another desktop environment - false
+              break # Break from loop
+            fi
+
+        elif  [[ "$choice" == '6' || "$choice" == 'cinnamon'
+        || "$choice" == 'cinamon' ]]
+        then # Option : CINNAMON
+            installCinnamonDesktop # Install CINNAMON Desktop
+
+            # Query if user wants to install another desktop environment
+            # after installing the previous
+            if queryInstallAnotherDesktopEnvironment
+            then # Installation of another desktop environment - true
+              sleep 1 # Hold loop
+              continue # Resume iterations
+            else # Installation of another desktop environment - false
+              break # Break from loop
+            fi
+
         elif  [[ "$choice" == '7' || "$choice" == 'mate' ]]
         then # Option : MATE Desktop
             installMateDesktop # Install MATE Desktop
@@ -1616,6 +1677,7 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '8' || "$choice" == 'budgie' ]]
         then # Option : BUDGIE Desktop
             installBudgieDesktop # Install MATE Desktop
@@ -1629,6 +1691,7 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '9' || "$choice" == 'enlightenment' ]]
         then # Option : ENLIGHTENMENT Desktop
             installEnlightenmentDesktop # Install ENLIGHTENMENT Desktop
@@ -1642,6 +1705,7 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '10' || "$choice" == 'kodi' ]]
         then # Option : KODI Desktop
             installKodiDesktop # Install KODI Desktop
@@ -1655,18 +1719,22 @@ function displayInstallationOptions(){
             else # Installation of another desktop environment - false
                 break # Break from loop
             fi
+
         elif  [[ "$choice" == '11' || "$choice" == 'install all of them'
               || "$choice" == 'install all' || "$choice" == 'all' ]]
         then
             installAllDesktopEnvironments # Install all desktop environments
             break # Break from loop
+
         elif  [[ "$choice" == '12' || "$choice" == '0' || "$choice" == 'skip'
         || "$choice" == 'cancel' || "$choice" == 'exit' ]]
         then
             cPrint "RED" "Installation cancelled!\n" |& tee -a $logFileName
             holdTerminal 2 # Hold for user to read
+
             ${clear} # Clear terminal
             break # Break from loop
+
         else
           # Invalid entry
           cPrint "GREEN" "Invalid desktop selection!! Please try again." |& tee -a $logFileName
@@ -1709,9 +1777,7 @@ function initSetupDesktopEnvironments(){
             gnome-shell --replace & disown &>> $logFileName
             cPrint "YELLOW" "Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
-
-            # Start / restart gdm3 for GNOME Desktop
-            systemctl restart gdm3 |& tee -a $logFileName
+            systemctl restart gdm3 |& tee -a $logFileName # Restart gdm3
 
         # Only if GNOME Installed
         elif [[ "$justInstalledKDEPLASMA" -eq 0 && "$justInstalledXFCE" -eq 0
@@ -1726,11 +1792,10 @@ function initSetupDesktopEnvironments(){
 
             # --replace and disown to break HUP signal for all jobs if exists
             gnome-shell --replace & disown &>> $logFileName
+
             cPrint "YELLOW" "Restarting gdm3 for GNOME Desktop." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
-
-            # Start / restart gdm3 for GNOME Desktop
-            systemctl restart gdm3 |& tee -a $logFileName
+            systemctl restart gdm3 |& tee -a $logFileName # Restart gdm3
 
         # Only if KDE PLASMA Desktop Installed
         elif [[ "$justInstalledKDEPLASMA" -eq 1 && "$justInstalledXFCE" -eq 0
@@ -1743,8 +1808,10 @@ function initSetupDesktopEnvironments(){
             cPrint "YELLOW" "Enabling sddm for KDE PLASMA Desktop." |& tee -a $logFileName
             # Enable sddm.service for KDE PLASMA Desktop
             systemctl enable sddm.service |& tee -a $logFileName
+
             cPrint "YELLOW" "Reconfiguring sddm for KDE PLASMA Desktop." |& tee -a $logFileName
             dpkg-reconfigure sddm |& tee -a $logFileName
+
             cPrint "YELLOW" "Restarting sddm for KDE PLASMA Desktop." |& tee -a $logFileName
             systemctl restart sddm |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
@@ -1759,11 +1826,12 @@ function initSetupDesktopEnvironments(){
         then
             cPrint "YELLOW" "Restarting lightdm for XFCE Desktop." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
-            cPrint "YELLOW" "Re-configuring lightdm for XFCE Desktop." |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Re-configure lightdm to load after boot
+            cPrint "YELLOW" "Re-configuring lightdm for XFCE Desktop." |& tee -a $logFileName
+            holdTerminal 1 # Hold for user to read
             dpkg-reconfigure lightdm |& tee -a $logFileName
+
             cPrint "YELLOW" "Creating a symlink to the unit file in /lib/systemd/system in /etc/systemd/system for lightdm to start at boot." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
 
@@ -1787,15 +1855,19 @@ function initSetupDesktopEnvironments(){
             then
                 cPrint "YELLOW" "Restarting LXDE." |& tee -a $logFileName
                 holdTerminal 1 # Hold for user to read
+
                 # Start LXDE Desktop from terminal
                 exec startlxde |& tee -a $logFileName
+
             elif [ "$justInstalledLXQT" -eq 1 ]
             then
                 cPrint "YELLOW" "Restarting LXQT." |& tee -a $logFileName
                 holdTerminal 1 # Hold for user to read
+
                 # Start LXQT Desktop from terminal
                 exec startlxqt |& tee -a $logFileName
             fi
+
         # Only if CINNAMON Desktop Installed
         elif [[ "$justInstalledKDEPLASMA" -eq 0 && "$justInstalledXFCE" -eq 0
             && "$justInstalledLXDE" -eq 0 && "$justInstalledLXQT" -eq 0
@@ -1806,11 +1878,12 @@ function initSetupDesktopEnvironments(){
         then
             # Kill all instances of CINNAMON Desktop if exists
             killall cinnamon |& tee -a $logFileName
-            cPrint "YELLOW" "Re-configuring CINNAMON Desktop." |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Re-configure CINNAMON Desktop
+            cPrint "YELLOW" "Re-configuring CINNAMON Desktop." |& tee -a $logFileName
+            holdTerminal 1 # Hold for user to read
             dpkg-reconfigure cinnamon |& tee -a $logFileName
+
             cPrint "YELLOW" "Running --replace for CINNAMON Desktop and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
 
@@ -1833,15 +1906,15 @@ function initSetupDesktopEnvironments(){
         then
             # Kill all instances of MATE-PANEL if exists
             killall mate-panel |& tee -a $logFileName
-            cPrint "YELLOW" "Re-configuring MATE-PANEL." |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Re-configure CINNAMON Desktop
-            dpkg-reconfigure mate-panel |& tee -a $logFileName
-            cPrint "YELLOW" "Running --replace for MATE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            cPrint "YELLOW" "Re-configuring MATE-PANEL." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
+            dpkg-reconfigure mate-panel |& tee -a $logFileName
 
             # Replace MATE-PANEL and disown to break HUP signal for all jobs if exists
+            cPrint "YELLOW" "Running --replace for MATE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            holdTerminal 1 # Hold for user to read
             mate-panel --replace && disown &>> $logFileName
 
         # Only if BUDGIE Installed
@@ -1854,16 +1927,16 @@ function initSetupDesktopEnvironments(){
         then
             # Kill all instances of BUDGIE-PANEL if exists
             killall budgie-panel |& tee -a $logFileName
-            cPrint "YELLOW" "Re-configuring BUDGIE-DESKTOP." |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Re-configure BUDGIE Desktop
-            dpkg-reconfigure budgie-desktop |& tee -a $logFileName
-            cPrint "YELLOW" "Running --replace for BUDGIE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            cPrint "YELLOW" "Re-configuring BUDGIE-DESKTOP." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
+            dpkg-reconfigure budgie-desktop |& tee -a $logFileName
 
             # Replace BUDGIE-PANEL and disown to break HUP signal for all jobs
             # if exists
+            cPrint "YELLOW" "Running --replace for BUDGIE-PANEL and disown to break HUP signal for all jobs if exists." |& tee -a $logFileName
+            holdTerminal 1 # Hold for user to read
             budgie-panel --replace && disown &>> $logFileName
 
         # Only if ENLIGHTENMENT Desktop Installed
@@ -1876,15 +1949,16 @@ function initSetupDesktopEnvironments(){
         then
             # Kill all instances of ENLIGHTENMENT Desktop if exists
             killall enlightenment & tee -a $logFileName
-            cPrint "YELLOW" "Re-configuring ENLIGHTENMENT Desktop." |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Re-configure ENLIGHTENMENT Desktop Desktop
+            cPrint "YELLOW" "Re-configuring ENLIGHTENMENT Desktop." |& tee -a $logFileName
+            holdTerminal 1 # Hold for user to read
             dpkg-reconfigure enlightenment |& tee -a $logFileName
+
+            # Start ENLIGHTENMENT Desktop
             cPrint "YELLOW" "Starting ENLIGHTENMENT Desktop." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
-
-            enlightenment_start # Start ENLIGHTENMENT Desktop
+            enlightenment_start
 
         # Only if KODI Desktop Installed
         elif [[ "$justInstalledKDEPLASMA" -eq 0 && "$justInstalledXFCE" -eq 0
@@ -1896,11 +1970,12 @@ function initSetupDesktopEnvironments(){
         then
             # Kill all instances of KODI Desktop if exists
             killall kodi & tee -a $logFileName
-            cPrint "YELLOW" "Re-configuring KODI Desktop." |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Re-configure KODI Desktop Desktop
+            cPrint "YELLOW" "Re-configuring KODI Desktop." |& tee -a $logFileName
+            holdTerminal 1 # Hold for user to read
             dpkg-reconfigure kodi |& tee -a $logFileName
+
             cPrint "YELLOW" "Starting KODI Desktop." |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
             kodi # Start kodi Desktop
@@ -1913,6 +1988,7 @@ function initSetupDesktopEnvironments(){
 function queryUninstallDefaultDesktopEnvironment(){
     while true
     do # Start infinite loop
+
         ${clear} # Clear terminal
 
         # Prompt user to set GNOME Desktop as default
@@ -1931,8 +2007,9 @@ function queryUninstallDefaultDesktopEnvironment(){
         then # Option : No
             return $(false) # Exit loop returning false
         else # Invalid entry
-          cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
+            cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
         fi
+
         sleep 1 # Hold loop
     done
 }
@@ -1941,7 +2018,9 @@ function queryUninstallDefaultDesktopEnvironment(){
 function queryPurgeDesktopEnvironment(){
     while true
     do # Start infinite loop
+
         ${clear} # Clear terminal
+
         # Prompt user to set GNOME Desktop as default
         cPrint "NC" "Do you want to remove all \e[1;32m$1\'s\e[0m \e[1;33mfiles and settings too? \n\t1.Y (Yes) -to remove\e[0m \e[1;32m$1\'s\e[0m \e[1;33mfiles and settings.\n\t2. N (No) to skip deleting files.\e[0m" |& tee -a $logFileName
         read -p ' option: ' purgeChoice
@@ -1958,8 +2037,9 @@ function queryPurgeDesktopEnvironment(){
         then # Option : No
             return $(false) # Exit loop returning false
         else # Invalid entry
-          cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
+            cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
         fi
+
         sleep 1 # Hold loop
     done
 }
@@ -2006,14 +2086,16 @@ function queryUninstallAnotherDesktopEnvironment(){
         then # Option : No
             return $(false) # Exit loop returning false
         else # Invalid entry
-          cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
+            cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
         fi
+
         sleep 1 # Hold loop
     done
 }
 
 # Function to uninstall GNOME Desktop
 function uninstallGnomeDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2026,6 +2108,7 @@ function uninstallGnomeDesktop(){
         apt-get remove gnome-classic.desktop -y |& tee -a $logFileName
         apt-get remove gnome-xorg.desktop -y |& tee -a $logFileName
         apt-get remove gnome-flashback-metacity.desktop -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling GNOME and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 3 # Hold for user to read
@@ -2053,6 +2136,7 @@ function uninstallGnomeDesktop(){
 
 # Function to uninstall KDE PLASMA Desktop
 function uninstallKdeDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2063,6 +2147,7 @@ function uninstallKdeDesktop(){
 
         apt-get remove kde-full kde-plasma-desktop -y |& tee -a $logFileName
         apt-get remove plasma.desktop -y |& tee -a $logFileName
+
     else # Purge
       cPrint "YELLOW" "\n\n Uninstalling KDE PLASMA and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
       holdTerminal 4 # Hold for user to read
@@ -2088,6 +2173,7 @@ function uninstallKdeDesktop(){
 
 # Function to uninstall XFCE Desktop
 function uninstallXfceDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2102,6 +2188,7 @@ function uninstallXfceDesktop(){
         apt-get remove xfce4-session xfdesktop4 -y |& tee -a $logFileName
         apt-get remove exo-utils xfce4-panel -y |& tee -a $logFileName
         apt-get remove xfce4-terminal thunar -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling XFCE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2135,6 +2222,7 @@ function uninstallXfceDesktop(){
 
 # Function to uninstall LXDE Desktop
 function uninstallLxdeDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2170,6 +2258,7 @@ function uninstallLxdeDesktop(){
 
 # Function to uninstall LXQT Desktop
 function uninstallLxqtDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2180,6 +2269,7 @@ function uninstallLxqtDesktop(){
 
         apt-get remove lxqt lxqt.desktop -y |& tee -a $logFileName
         apt-get remove task-lxqt.desktop -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling LXQT and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2204,6 +2294,7 @@ function uninstallLxqtDesktop(){
 
 # Function to uninstall CINNAMON Desktop
 function uninstallCinnamonDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2215,6 +2306,7 @@ function uninstallCinnamonDesktop(){
         apt-get remove cinnamon-desktop-environment -y |& tee -a $logFileName
         apt-get remove task-cinnamon-desktop -y |& tee -a $logFileName
         apt-get remove cinnamon.desktop -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling CINNAMON and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2240,6 +2332,7 @@ function uninstallCinnamonDesktop(){
 
 # Function to uninstall MATE Desktop
 function uninstallMateDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2250,6 +2343,7 @@ function uninstallMateDesktop(){
 
         apt-get remove mate-desktop-environment -y |& tee -a $logFileName
         apt-get remove task-mate-desktop mate.desktop -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling MATE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2275,6 +2369,7 @@ function uninstallMateDesktop(){
 
 # Function to uninstall BUDGIE Desktop
 function uninstallBudgieDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2285,6 +2380,7 @@ function uninstallBudgieDesktop(){
 
         apt-get remove budgie-desktop -y |& tee -a $logFileName
         budgie.desktop -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling BUDGIE and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2309,6 +2405,7 @@ function uninstallBudgieDesktop(){
 
 # Function to uninstall ENLIGHTENMENT Desktop
 function uninstallEnlightenmentDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2318,6 +2415,7 @@ function uninstallEnlightenmentDesktop(){
         holdTerminal 2 # Hold for user to read
 
         apt-get remove enlightenment -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling ENLIGHTENMENT and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2341,6 +2439,7 @@ function uninstallEnlightenmentDesktop(){
 
 # Function to uninstall KODI Desktop
 function uninstallKodiDesktop(){
+
     ${clear} # Clear terminal
 
     # Pass name of respective desktop environment as parameter
@@ -2350,6 +2449,7 @@ function uninstallKodiDesktop(){
         holdTerminal 2 # Hold for user to read
 
         apt-get remove kodi -y |& tee -a $logFileName
+
     else # Purge
         cPrint "YELLOW" "\n\n Uninstalling KODI and deleting its files and configuration. This won\'t take long. Please wait..." |& tee -a $logFileName
         holdTerminal 4 # Hold for user to read
@@ -2373,6 +2473,7 @@ function uninstallKodiDesktop(){
 
 # Function to reconstruct uninstallation commands
 function reconstructUninstallCommands(){
+
     declare -a uninstallCommands=( "uninstallGnomeDesktop" "uninstallKdeDesktop"
     "uninstallXfceDesktop" "uninstallLxdeDesktop" "uninstallLxqtDesktop"
     "uninstallCinnamonDesktop" "uninstallMateDesktop" "uninstallBudgieDesktop"
@@ -2390,17 +2491,25 @@ function reconstructUninstallCommands(){
             # Reconstruct command
             envName="$1"; envNameWordCase=""
             desktop="desktop"; desktopWordCase=""
-            for word in $envName # Loop capitalizing respective word
-            do envNameWordCase=${word^}
+
+            # Loop capitalizing respective word
+            for word in $envName
+            do
+                envNameWordCase=${word^}
             done
-            for word in $desktop # Loop capitalizing respective word
-            do desktopWordCase=${word^}
+
+            # Loop capitalizing respective word
+            for word in $desktop
+            do
+                desktopWordCase=${word^}
             done
 
             # Updating selected command
             selectedCommand=${selectedCommand/$envName/$envNameWordCase}
+
             # Updating selected command
             selectedCommand=${selectedCommand/$desktop/$desktopWordCase}
+
             # Setting reconstructed command
             reconstructedCommand="$selectedCommand"
         fi
@@ -2409,7 +2518,9 @@ function reconstructUninstallCommands(){
 
 # Function to create uninstallation order
 function createUninstallationOrder(){
+
     currentDefault="" # Stores the current default desktop environment
+
     # Get current default desktop
     if [ "$XDG_CURRENT_DESKTOP" = "" ]
     then # Check for current desktop environment
@@ -2463,17 +2574,19 @@ function createUninstallationOrder(){
         fi
     done
 
-        # Check if reconstructed command is empty
-        if [ ! -z "$reconstructedCommand" ]
-        then # Not empty
-            # Add uninstall default desktop command at the end of order array
-            uninstallOrder=( "${uninstallOrder[@]}" "$reconstructedCommand" )
-        else cPrint "RED" "$currentDefault will not be uninstalled since it is not supported in the current version $scriptVersion"
-        fi
+    # Check if reconstructed command is empty
+    if [ ! -z "$reconstructedCommand" ]
+    then # Not empty
+        # Add uninstall default desktop command at the end of order array
+        uninstallOrder=( "${uninstallOrder[@]}" "$reconstructedCommand" )
+    else
+        cPrint "RED" "$currentDefault will not be uninstalled since it is not supported in the current version $scriptVersion"
+    fi
 }
 
 # Function to uninstall all desktop environments
 function uninstallAllDesktopEnvironments(){
+
     createUninstallationOrder # Generate desktop environment uninstallation order
     cPrint "GREEN" "Uninstalling all desktop environment. PLease wait!!" |& tee -a $logFileName
 
@@ -2512,6 +2625,7 @@ function uninstallAllDesktopEnvironments(){
 
 # Function to select and uninstall a desktop environment
 function displayUninstallationOptions(){
+
     ${clear} # Clear terminal
 
     # Stores true or false in integer and ensures single instance running of
@@ -2638,6 +2752,7 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'kde' || "$choice" == 'kde plasma desktop'
             || "$choice" == 'kde plasma' || "$choice" == 'kde desktop' ]]
             then # Option : KDE PLASMA Desktop
@@ -2652,6 +2767,7 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'xfce' || "$choice" == 'xfce desktop' ]]
             then # Option : XFCE Desktop
                 uninstallXfceDesktop # Uninstall XFCE Desktop
@@ -2665,6 +2781,7 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'lxde' || "$choice" == 'lxde desktop' ]]
             then # Option : LXDE Desktop
                 uninstallLxdeDesktop # Uninstall LXDE Desktop
@@ -2678,33 +2795,36 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
-              elif  [[ "$choice" == 'lxqt' || "$choice" == 'lxqt desktop' ]]
-              then # Option : LXQT Desktop
-                  uninstallLxqtDesktop # Uninstall LXQT Desktop
 
-                  # Query if user wants to uninstall another desktop environment
-                  # after uninstalling the previous
-                  if queryUninstallAnotherDesktopEnvironment
-                  then # Installation of another desktop environment - true
-                      sleep 1 # Hold loop
-                      continue # Resume iterations
-                  else # Installation of another desktop environment - false
-                      break # Break from loop
-                  fi
-              elif  [[ "$choice" == 'cinnamon'
-              || "$choice" == 'cinnamon desktop' ]]
-              then # Option : CINNAMON
-                  uninstallCinnamonDesktop # Uninstall CINNAMON Desktop
+            elif  [[ "$choice" == 'lxqt' || "$choice" == 'lxqt desktop' ]]
+            then # Option : LXQT Desktop
+              uninstallLxqtDesktop # Uninstall LXQT Desktop
 
-                  # Query if user wants to uninstall another desktop environment
-                  # after uninstalling the previous
-                  if queryUninstallAnotherDesktopEnvironment
-                  then # Installation of another desktop environment - true
-                      sleep 1 # Hold loop
-                      continue # Resume iterations
-                  else # Installation of another desktop environment - false
-                      break # Break from loop
-                  fi
+                # Query if user wants to uninstall another desktop environment
+                # after uninstalling the previous
+                if queryUninstallAnotherDesktopEnvironment
+                then # Installation of another desktop environment - true
+                  sleep 1 # Hold loop
+                  continue # Resume iterations
+                else # Installation of another desktop environment - false
+                  break # Break from loop
+                fi
+
+            elif  [[ "$choice" == 'cinnamon'
+            || "$choice" == 'cinnamon desktop' ]]
+            then # Option : CINNAMON
+                uninstallCinnamonDesktop # Uninstall CINNAMON Desktop
+
+                # Query if user wants to uninstall another desktop environment
+                # after uninstalling the previous
+                if queryUninstallAnotherDesktopEnvironment
+                then # Installation of another desktop environment - true
+                  sleep 1 # Hold loop
+                  continue # Resume iterations
+                else # Installation of another desktop environment - false
+                  break # Break from loop
+                fi
+
             elif  [[ "$choice" == 'mate' || "$choice" == 'mate desktop' ]]
             then # Option : MATE Desktop
                 uninstallMateDesktop # Uninstall MATE Desktop
@@ -2718,6 +2838,7 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'budgie' || "$choice" == 'budgie desktop' ]]
             then # Option : BUDGIE Desktop
                 uninstallBudgieDesktop # Uninstall MATE Desktop
@@ -2731,6 +2852,7 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'enlightenment'
             || "$choice" == 'enlightenment desktop' ]]
             then # Option : ENLIGHTENMENT Desktop
@@ -2745,6 +2867,7 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'kodi' || "$choice" == 'kodi desktop' ]]
             then # Option : KODI Desktop
                 uninstallKodiDesktop # Uninstall KODI Desktop
@@ -2758,20 +2881,26 @@ function displayUninstallationOptions(){
                 else # Installation of another desktop environment - false
                     break # Break from loop
                 fi
+
             elif  [[ "$choice" == 'uninstall all'
             || "$choice" == 'uninstall all desktop environments' ]]
             then
                 # Uninstall all desktop environments
                 uninstallAllDesktopEnvironments
                 break # Uninstall all desktop environments
+
             elif  [[ "$choice" == 'cancel' ]]
             then
                 cPrint "RED" "\n\n Uninstallation cancelled!\n" |& tee -a $logFileName
                 holdTerminal 1 # Hold for user to read
+
                 ${clear} # Clear terminal
                 break # Break from loop - Uninstallation cancelled
-            else cPrint "GREEN" "Invalid desktop selection!! Please try again." |& tee -a $logFileName # Invalid entry
+
+            else
+                cPrint "GREEN" "Invalid desktop selection!! Please try again." |& tee -a $logFileName # Invalid entry
             fi
+
             sleep 1 # Hold loop
         else
             cPrint "RED" "\n\n You have not installed any desktop environment.\n"
@@ -2800,8 +2929,10 @@ function displayMainMenu(){
         then # Option : Yes
             # Checking for internet connection before continuing
             if ! isConnected
-            then exitScript --connectionFailure # Exit script on connection failure
+            then
+                exitScript --connectionFailure # Exit script on connection failure
             fi
+
             displayInstallationOptions # Install a desktop environment
 
         elif [[ "$mainMenuChoice" == '2' || "$mainMenuChoice" == 'uninstall'
@@ -2812,6 +2943,7 @@ function displayMainMenu(){
             then # Exit script on connection failure
                 exitScript --connectionFailure
             fi
+
             displayUninstallationOptions # Uninstall a desktop environment
 
         elif [[ "$mainMenuChoice" == '3' || "$mainMenuChoice" == 'cancel'
@@ -2822,8 +2954,9 @@ function displayMainMenu(){
             setupCancelled=$[ setupCancelled + 1 ]
             cPrint "RED" "\n\n Script cancelled!!\n" |& tee -a $logFileName
             break # Break from loop
+
         else # Invalid entry
-          cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
+            cPrint "GREEN" "Invalid entry!! Please try again." |& tee -a $logFileName
         fi
 
         sleep 1 # Hold loop
