@@ -1,6 +1,6 @@
 # CHANGELOG
 
-**Changelog from version 1.0 - 3.4**
+**Changelog from version 1.0 - 3.6**
 
 **Version 1.0:**
 1. Added options to install:
@@ -49,3 +49,7 @@
 **Version 3.5:**
 1. Changed name from `debian-desktop-environment-manager-cli.sh` to `linux-desktop-environment-toolkit-cli.sh`
 2. Minor refactoring.
+
+**Version 3.6:**
+1. Added function to check for and install linux headers before installing desktop environments.
+2. Bug fixes and code optimization.
