@@ -1,4 +1,4 @@
-# linux-desktop-environment-toolkit-cli
+# linux-desktop-environment-tool-cli
 
 \
 **Current version: `Version 3.6`**\
@@ -23,10 +23,10 @@ The list of desktop environments listed are:
 To download and use this script:
   1. Click on *`code`* on this page.
   2. Click on *`Download ZIP`*.
-  3. A file named *`linux-desktop-environment-toolkit-cli-master.zip`* will be downloaded. Extract the zip file in your computer. You will see a folder labelled *`linux-desktop-environment-toolkit-cli-master`*. Navigate to that folder.
+  3. A file named *`linux-desktop-environment-tool-cli-master.zip`* will be downloaded. Extract the zip file in your computer. You will see a folder labelled *`linux-desktop-environment-tool-cli-master`*. Navigate to that folder.
   4. Open terminal at the files location by right clicking and selecting *`Open in terminal`*. You can as well launch your terminal and navigate to where the downloaded file is.
-  5. Type **`chmod +x linux-desktop-environment-toolkit-cli.sh`** and click on `enter key` to make the script executable.
-  6. Type **`./linux-desktop-environment-toolkit-cli.sh`** to run the script.
+  5. Type **`chmod +x linux-desktop-environment-tool-cli.sh`** and click on `enter key` to make the script executable.
+  6. Type **`./linux-desktop-environment-tool-cli.sh`** to run the script.
 
 \
 \
