@@ -1,7 +1,7 @@
 # linux-desktop-environment-tool-cli
 
 \
-**Current version: `Version 4.0`**\
+**Current version: `Version 4.1`**\
 **This script runs on terminal and works best with Debian and Ubuntu**
 
 This script helps Debian and Ubuntu users install the below desktop environments from a list of options on a terminal menu. It also has an uninstall option for the installed desktop environments. The script will *`update`* system packages and *`upgrade`* software packages before installing or uninstalling any desktop environment.
