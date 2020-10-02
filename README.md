@@ -1,7 +1,7 @@
 # linux-desktop-environment-tool-cli
 
 \
-**Current version: `Version 3.6`**\
+**Current version: `Version 4.0`**\
 **This script runs on terminal and works best with Debian and Ubuntu**
 
 This script helps Debian and Ubuntu users install the below desktop environments from a list of options on a terminal menu. It also has an uninstall option for the installed desktop environments. The script will *`update`* system packages and *`upgrade`* software packages before installing or uninstalling any desktop environment.
@@ -16,7 +16,7 @@ The list of desktop environments listed are:
   7.  `MATE` Desktop,
   8.  `BUDGIE` Desktop,
   9.  `ENLIGHTENMENT` Desktop and
-  10. `KODI.`
+  10. `FLUXBOX` Desktop.
 
 
 \
@@ -29,8 +29,9 @@ To download and use this script:
   6. Type **`./linux-desktop-environment-tool-cli.sh`** to run the script.
 
 \
+
 \
-When the script starts, it will present you with a 3 option main menu as below:
+**Scripts Main menu:**
   1. `Install a desktop environment.`
   2. `Uninstall/remove a desktop environment.`
   3. `Cancel/Exit.`
