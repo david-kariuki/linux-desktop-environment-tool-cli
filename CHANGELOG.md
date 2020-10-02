@@ -61,3 +61,6 @@
 2. Removed `Kodi` from list of desktop environments.
 3. Reduced script execution time taken by long sleep timers.
 4. Other minor fixes and improvements.
+
+**Version 4.1:**
+1. Dropped `alacarte` in gnome installation and fixed enlightenment dependencies installation bugs.
