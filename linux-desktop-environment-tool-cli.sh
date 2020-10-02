@@ -8,7 +8,7 @@
 declare -r targetLinux="Debian Linux"
 declare -l -r scriptName="linux-desktop-environment-tool-cli" # Set to lowers and read-only
 declare -l -r logFileName="$scriptName-logs.txt" # Set to lowers and read-only
-declare scriptVersion="4.0" # Script version
+declare scriptVersion="4.1" # Script version
 declare -i -r numberOfDesktopEnvironments=10 # Stores total number of desktop environments
 declare -l -r networkTestUrl="www.google.com" # Stores the networkTestUrl (Set to lowers and read-only)
 declare -r numberExpression='^[0-9]+$' # Number expression
@@ -788,12 +788,6 @@ function installGNOMEDesktop(){
 
             # Add script actions to script actions array
             scriptActions=( "${scriptActions[@]}" "install-desktop-gnome" )
-            cPrint "YELLOW" "\n\n Installing alacarte menu editor for GNOME." |& tee -a $logFileName
-            holdTerminal 4 # Hold for user to read
-
-            # Install alacarte
-            apt-get install alacarte |& tee -a $logFileName
-            holdTerminal 1 # Hold for user to read
 
             # Add script actions to script actions array
             scriptActions=( "${scriptActions[@]}" "install-alacarte" )
@@ -1269,9 +1263,9 @@ function installEnlightenmentDesktop(){
             holdTerminal 1 # Hold for user to read
 
             apt-get install libpoppler-cpp-dev -y |& tee -a $logFileName
-            libspectre-dev libraw-dev librsvg2-dev -y |& tee -a $logFileName
-            libudev-dev libmount-dev libdbus-1-dev -y |& tee -a $logFileName
-            libpulse-dev libsndfile1-dev -y |& tee -a $logFileName
+            apt-get install libspectre-dev libraw-dev librsvg2-dev -y |& tee -a $logFileName
+            apt-get install libudev-dev libmount-dev libdbus-1-dev -y |& tee -a $logFileName
+            apt-get install libpulse-dev libsndfile1-dev -y |& tee -a $logFileName
             holdTerminal 1 # Hold for user to read
 
             apt-get install libxcursor-dev -y |& tee -a $logFileName
