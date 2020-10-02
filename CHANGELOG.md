@@ -1,8 +1,8 @@
-# CHANGELOG 
+# CHANGELOG
 **linux-desktop-environment-tool-cli**
 
 \
-**Changelog from version 1.0 - 3.6**
+**Changelog from version 1.0 - 4.0**
 
 **Version 1.0:**
 1. Added options to install:
@@ -55,3 +55,9 @@
 **Version 3.6:**
 1. Added function to check for and install linux headers before installing desktop environments.
 2. Bug fixes and code optimization.
+
+**Version 4.0:**
+1. Added option to install and install `Fluxbox`.
+2. Removed `Kodi` from list of desktop environments.
+3. Reduced script execution time taken by long sleep timers.
+4. Other minor fixes and improvements.
