@@ -220,6 +220,10 @@ function checkIfUserIsRoot(){
 
 # Function to check for internet connection and validate security on connection
 function isConnected(){
+
+
+    ${clear} # Clear terminal
+
     # Creating integer variable
     local -i count=0 # Declare loop count variable
     local -i -r retrNum=4 # Declare and set number of retries to read-only
@@ -1373,7 +1377,7 @@ function installAllDesktopEnvironments(){
     installMateDesktop --y # Install MATE Desktop
     installBudgieDesktop --y # Install BUDGIE Desktop
     installEnlightenmentDesktop --y # Install ENLIGHTENMENT Desktop
-    installFluxboxDesktop # Install FLUXBOX Desktop
+    installFluxboxDesktop --y # Install FLUXBOX Desktop
 
     # Install GNOME Desktop and set it as the default desktop
     installGNOMEDesktop --y --setDefault
